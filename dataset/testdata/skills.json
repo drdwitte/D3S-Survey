@@ -1,0 +1,27 @@
+{"name":"skills",
+  "skill-metrics": [
+			{"name":"Algorithms","metrics":[55,60,59,50,17]},
+			{"name":"Back-End_Programming","metrics":[85,67,35,36,18]},
+			{"name":"Bayesian/Monte-Carlo_Statistics","metrics":[88,74,84,24,7]},
+			{"name":"Big_Distributed_Data","metrics":[56,87,61,26,11]},
+			{"name":"Business","metrics":[38,54,43,73,33]},
+			{"name":"Classical_Statistics","metrics":[33,51,70,58,29]},
+			{"name":"DataManipulation","metrics":[34,45,53,70,39]},
+			{"name":"Front-End_Programming","metrics":[67,72,50,40,12]},
+			{"name":"GraphicalModels","metrics":[81,73,46,29,12]},
+			{"name":"MachineLearning","metrics":[51,71,42,53,24]},
+			{"name":"Math","metrics":[30,45,77,56,33]},
+			{"name":"Optimization","metrics":[54,72,66,38,11]},
+			{"name":"Product Development","metrics":[50,48,57,55,31]},
+			{"name":"Science","metrics":[60,51,47,46,37]},
+			{"name":"Simulation","metrics":[96,67,55,20,8]},
+			{"name":"SpatialStatistics","metrics":[123,70,25,18,5]},
+			{"name":"StructuredData" ,"metrics":[40,39,53,66,43]},
+			{"name":"Surveys_Marketing","metrics":[74,81,50,25,11]},
+			{"name":"SystemsAdministration","metrics":[101,54,43,32,11]},
+			{"name":"TemporalStatistics","metrics":[61,65,67,34,14]},
+			{"name":"UnstructuredData","metrics":[69,61,53,41,17]},
+			{"name":"Visualization","metrics":[42,63,63,48,25]}
+
+  ]
+}

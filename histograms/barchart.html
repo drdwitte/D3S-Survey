@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+rect {
+	fill:steelblue;
+	stroke:black;
+}
+rect:hover{
+	fill:red;
+}
+
+</style>
+<body>
+	<svg class="chart">
+	
+	</svg>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var jsondata = {"name":"skills",
+					"skillmetrics": [
+								{"name":"Algorithms","metrics":[55,60,59,50,17]},
+								{"name":"Back-End_Programming","metrics":[85,67,35,36,18]},
+								{"name":"Bayesian/Monte-Carlo_Statistics","metrics":[88,74,84,24,7]},
+								{"name":"Big_Distributed_Data","metrics":[56,87,61,26,11]},
+								{"name":"Business","metrics":[38,54,43,73,33]},
+								{"name":"Classical_Statistics","metrics":[33,51,70,58,29]},
+								{"name":"DataManipulation","metrics":[34,45,53,70,39]},
+								{"name":"Front-End_Programming","metrics":[67,72,50,40,12]},
+								{"name":"GraphicalModels","metrics":[81,73,46,29,12]},
+								{"name":"MachineLearning","metrics":[51,71,42,53,24]},
+								{"name":"Math","metrics":[30,45,77,56,33]},
+								{"name":"Optimization","metrics":[54,72,66,38,11]},
+								{"name":"Product Development","metrics":[50,48,57,55,31]},
+								{"name":"Science","metrics":[60,51,47,46,37]},
+								{"name":"Simulation","metrics":[96,67,55,20,8]},
+								{"name":"SpatialStatistics","metrics":[123,70,25,18,5]},
+								{"name":"StructuredData" ,"metrics":[40,39,53,66,43]},
+								{"name":"Surveys_Marketing","metrics":[74,81,50,25,11]},
+								{"name":"SystemsAdministration","metrics":[101,54,43,32,11]},
+								{"name":"TemporalStatistics","metrics":[61,65,67,34,14]},
+								{"name":"UnstructuredData","metrics":[69,61,53,41,17]},
+								{"name":"Visualization","metrics":[42,63,63,48,25]}
+
+									]
+				}
+var width = 200;
+var height = 70;
+
+var testdata = [55,60,59,50,17];
+var counter = 0;
+
+var otherdata = jsondata.skillmetrics[5].metrics;
+
+
+var chart = d3.select(".chart")
+					.attr("width",width)
+					.attr("height",height);
+	createHistogram(testdata);
+	
+	chart.on("click", function() {
+		console.log("clickevent and counter = " + counter);
+		counter ++;
+        if(counter == 22){
+			counter = 0;
+		}
+		var data = jsondata.skillmetrics[counter].metrics;
+		console.log(data);
+		updateHistogram(jsondata.skillmetrics[counter].metrics);
+    });
+					
+
+
+function createHistogram(metricsarray){
+	var barheight = height/5 - 1;
+	var xScale = d3.scale.linear()
+					.domain([0,125])
+					.range([0,width]);
+					
+	var bars = chart.selectAll("g")
+					.data(metricsarray)
+					.enter()
+					.append("g")
+					.attr("transform",function(d,i){
+						return "translate(0," + i*barheight + ")";
+					});
+	
+	bars.append("rect")
+			.attr("x",0)
+			.attr("y",0)
+			.attr("width", function(d){return xScale(d);})
+			.attr("height",barheight-1);
+}
+
+function updateHistogram(dataset){
+	var barheight = height/5 - 1;
+	var xScale = d3.scale.linear()
+					.domain([0,125])
+					.range([0,width]);
+	
+	/* remember: when an actual updata of data occurs, it is enough to simply update the svg element
+	   that needs changing. In this case, you dont have to reappend all the "g" elements, as they stay
+	   the same. Even the amount of "g" elements stays the same in this case, as there is no new data 
+		appended to the array, its just an entire new array. So just updating the "rect" elements is enough.
+	*/	
+	var bars = chart.selectAll("rect")
+					.data(dataset)
+					.transition()
+					.duration(2000)
+					.attr("x",0)
+					.attr("y",0)
+					.attr("width", function(d){return xScale(d);})
+					.attr("height",barheight-1);
+			
+}
+
+
+
+</script>
+</body>
+</html>
