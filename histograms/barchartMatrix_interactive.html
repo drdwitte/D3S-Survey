@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+
+.axis path {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	  stroke-width: 2px;
+	}
+	
+.selected{
+	fill:green;
+}
+
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+<script>
+/* main script body */
+
+var jsonData = [
+				{"name":"Algorithms","freqs":[55,60,59,50,17]},
+				{"name":"Back-End_Programming","freqs":[85,67,35,36,18]},
+				{"name":"Bayesian/Monte-Carlo_Statistics","freqs":[88,74,84,24,7]},
+				{"name":"Big_Distributed_Data","freqs":[56,87,61,26,11]},
+				{"name":"Business","freqs":[38,54,43,73,33]},
+				{"name":"Classical_Statistics","freqs":[33,51,70,58,29]},
+				{"name":"DataManipulation","freqs":[34,45,53,70,39]},
+				{"name":"Front-End_Programming","freqs":[67,72,50,40,12]},
+				{"name":"GraphicalModels","freqs":[81,73,46,29,12]},
+				{"name":"MachineLearning","freqs":[51,71,42,53,24]},
+				{"name":"Math","freqs":[30,45,77,56,33]},
+				{"name":"Optimization","freqs":[54,72,66,38,11]},
+				{"name":"Product Development","freqs":[50,48,57,55,31]},
+				{"name":"Science","freqs":[60,51,47,46,37]},
+				{"name":"Simulation","freqs":[96,67,55,20,8]},
+				{"name":"SpatialStatistics","freqs":[123,70,25,18,5]},
+				{"name":"StructuredData" ,"freqs":[40,39,53,66,43]},
+				{"name":"Surveys_Marketing","freqs":[74,81,50,25,11]},
+				{"name":"SystemsAdministration","freqs":[101,54,43,32,11]},
+				{"name":"TemporalStatistics","freqs":[61,65,67,34,14]},
+				{"name":"UnstructuredData","freqs":[69,61,53,41,17]},
+				{"name":"Visualization","freqs":[42,63,63,48,25]}
+			];
+			
+var width = 1500;
+var height =300;
+var margin = {left:60, top:60, right:60, bottom:60};
+
+var svg = d3.select("body").append("svg")
+		.attr("width",width)
+		.attr("height",height);
+
+var selectedElements = ["Algorithms", "Visualization", "StructuredData", "Optimization", "UnstructuredData"];
+
+var filteredRecords = filterElements(jsonData,selectedElements) 
+
+/* GLOBAL VARIABLE OM DATA DOOR TE GEVEN AAN DE SLOPE. Wordt opgevuld 
+	in de callback van de rects.
+ */
+var slopeData = [];
+
+drawHistogramMatrix(filteredRecords);
+
+/* Loose functions */
+
+function filterElements(elements, names){
+
+	var filtered = [];
+	//console.log(names)
+	for (i=0; i<elements.length; i++){
+		//console.log(elements[i].name);
+		
+		if (names.indexOf(elements[i].name)>=0)
+			filtered.push(elements[i]);		
+	} 
+
+	return filtered;
+}
+
+function drawHistogramMatrix(data){
+
+	var numBoxes = data.length;
+	var totalBoxWidth = width - margin.left - margin.right;
+	var singleBoxRange = totalBoxWidth / numBoxes;
+	var singleBoxWidth = singleBoxRange*0.80;
+
+	var left = margin.left;
+
+	for (i=0; i<numBoxes; i++)
+	{	
+		drawOneHistogram(data[i]["freqs"], data[i].name,left+i*singleBoxRange,left+i*singleBoxRange+singleBoxWidth);
+	}
+}
+
+//Een kleine aanpassing: ik geef dataName (bv Algorithms) mee, zodat ik weet in welk histogram ik rects moet selecteren
+function drawOneHistogram(data, dataName, xLeft, xRight){
+	console.log(data);
+	var xScale = d3.scale.linear()
+	    		.domain([0, d3.max(data)])
+	    		.range([xLeft,xRight]);
+
+	var yScale = d3.scale.ordinal()
+	    		.domain([1,2,3,4,5])
+	    		.rangeBands([height-margin.bottom,margin.top]);
+
+	var bars = svg.selectAll("bars")
+	  		.data(data)
+	  		.enter()
+			.append("rect")
+	    			.attr("width"  , function(d)  { return xScale(d)-xScale(0);})
+				.attr("height" , function(d)  { return yScale.rangeBand()*0.95;})
+				.attr("x"      , function(d)  { return xScale(0);})
+				.attr("y"      , function(d,i){ return yScale(i+1);})
+				.attr("class",dataName)
+				.attr("id", function(d,i){return i+1;})
+				.style("fill" ,  "red")
+				.on("click",function(d,i){
+					/*	THIS IS WHERE THE MAGIC HAPPENS! :-). Vermits er via d3 niet direct een manier is om
+						om aan de andere elementen te raken in een callback, ben ik gaan werken met ID's en 
+						classes. D3 kan deze toch selecteren. De html5 'data-' attributen zijn illegaal voor 
+						svg elementen, dus kan ik niet anders dan metadata als class te gebruiken, ma soit.
+						De class voor de elementen wordt de dataName (staat hier enkele regels boven)
+						en de id is de score die ze gegeven hebben (1-5). Je kan dan de geslecteerde id gebruiken
+						als uiterste en alle bars met een id die minder is (of meer indien we willen) een andere
+						style geven.
+					*/
+					var selectedId = i+1;
+					var classname = "." + dataName;
+					
+					//When selecting d3.selectAll by classname, it returns an array object, with 1 array at index 0.
+					// I am also setting 'clearing the previous selection' (if there was any) by giving all selected
+					// elements back their red fill. You can read up on selections here: https://github.com/mbostock/d3/wiki/Selections
+					var selectionObject = d3.selectAll(classname).attr("style","fill:red");
+					var selection = selectionObject[0];
+
+					for ( j=0; j<selectedId; j++){
+						console.log(selection[j]);
+						selection[j].setAttribute("style","fill:green");
+						var filter = {"axis":dataName, "value":60};
+						slopeData.push(filter);
+					}
+					
+					console.log(slopeData);
+					
+				})
+			;
+
+	var text = svg.selectAll("barlabels")
+			.data(data)
+			.enter()
+			.append("text")
+				.attr("x"      , function(d)  { return Math.max(xScale(0.5),xScale(d)-25);})
+				.attr("y"      , function(d,i){ return yScale(i+1)+yScale.rangeBand()/2;})
+				.text(function(d){ return d})
+				.style("fill","white")
+				//.style("font-size","15px")
+				;
+
+	//drawing the X and Y-axis + add a caption
+	var xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient("top")
+				.ticks(0)
+					;
+
+	var yAxis = d3.svg.axis()
+				.scale(yScale)
+				.orient("left")
+				.ticks(5)
+				;
+
+	var gX = svg.append("g");
+	gX.attr("class","axis");
+	gX.attr("transform","translate("
+					+0
+					+","
+					+margin.top
+					+")"
+		);
+	gX.call(xAxis);
+
+	var gY = svg.append("g");
+	gY.attr("class","axis");
+	gY.attr("transform","translate("
+					+xLeft
+					+","
+					+0
+					+")"
+			);
+	gY.call(yAxis);
+		
+}
+
+</script>
+</body>
+</html>
