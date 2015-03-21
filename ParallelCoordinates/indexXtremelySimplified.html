@@ -6,23 +6,19 @@ svg {
   font: 12px sans-serif;
 }
 
-.background path {
+path.background {
   fill: none;
-  stroke: #ddd;
+  stroke-width: 2;	
   shape-rendering: crispEdges;
 }
 
-.foreground path {
+path.foreground {
   fill: none;
-  /*stroke: red;*/
-  stroke-width: 4	
+  shape-rendering: crispEdges;
+  stroke-width: 5;	
 }
 
-.brush .extent {
-  fill-opacity: .3;
-  stroke: #fff;
-  shape-rendering: crispEdges;
-}
+
 
 .axis line,
 .axis path {
@@ -49,12 +45,40 @@ var height = 300;
 
 var skillset = ["Algorithms", "Math","Business"];
 
-var users = [
-		{"type" : "Algorithms", "score" : 3},
-		{"type" : "Math", "score" : 5},		
-		{"type" : "Business", "score" : 1},
-			
-		];
+
+var filterMap = {
+		"Algorithms":2,	
+		"Math":2,
+		"Business":1
+}
+
+
+
+var singleUser1 = {	
+			"visible": true,	
+			"skills":[
+				{"type" : "Algorithms", "score" : 3},
+				{"type" : "Math", "score" : 5},		
+				{"type" : "Business", "score" : 1},
+			]
+		};
+var singleUser2 = {	
+			"visible": true,	
+			"skills":[
+				{"type" : "Algorithms", "score" : 3},
+				{"type" : "Math", "score" : 3},		
+				{"type" : "Business", "score" : 4},
+			]
+		};
+var singleUser3 = {	
+			"visible": false,	
+			"skills":[
+				{"type" : "Algorithms", "score" : 1},
+				{"type" : "Math", "score" : 1},		
+				{"type" : "Business", "score" : 3},
+			]
+		};
+
 
 
 var xScale = d3.scale.ordinal()
@@ -70,8 +94,7 @@ var yScale = d3.scale.linear()
 
 var line = d3.svg.line();
 var axis = d3.svg.axis().orient("left");
-var background;
-var foreground;
+
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -80,50 +103,28 @@ var svg = d3.select("body").append("svg")
 
 d3.csv("skills2.csv", function(error, data) {
 
-   var filteredData = users;	
+
+   console.log(data[0]);
+
+   var filterCheck = filterSkills(data, filterMap);
+
+   console.log(filterCheck.length);
+   console.log(filterCheck[0]);
+
+   var filteredData = []; 
+   filteredData.push(singleUser1);	
+   filteredData.push(singleUser2);	
+   filteredData.push(singleUser3);	
 
 
-
-  // Add grey background lines for context.
-  /*background = svg.append("g")
-      .attr("class", "background")
-    .selectAll("path")
-      .data(filteredData)
-    .enter().append("path")
-      .attr("d", path);
-
-  // Add blue foreground lines for focus.
-  foreground = svg.append("g")
-      .attr("class", "foreground")
-    .selectAll("path")
-      .data(filteredData)
-    .enter().append("path")
-      .attr("d", path)
-      .style("stroke", function(d) { return randRGB(); } );*/
-
-
-  var lineFunc = d3.svg.line()
-		  .x(function(d) {    return xScale(d.type)+xScale.rangeBand()/2; })
-		  .y(function(d) {    return yScale(d.score); })
-		  .interpolate('linear');
-
-  svg.append("path")
-		  .attr('d', lineFunc(filteredData))
-		  .attr('stroke', "red")
-		  .attr('stroke-width', 3)
-		  .attr('fill', 'none');
-
-
-
-
-//drawing the X and Y-axis + add a caption
-	var xAxis = d3.svg.axis()
+  //drawing the X and Y-axis + add a caption
+  var xAxis = d3.svg.axis()
 			.scale(xScale)
 			.orient("top")
 				.ticks(skillset.length)
 					;
 
-	var yAxis = d3.svg.axis()
+  var yAxis = d3.svg.axis()
 				.scale(yScale)
 				.orient("left")
 				.ticks(5)
@@ -131,32 +132,59 @@ d3.csv("skills2.csv", function(error, data) {
 
 
 
-	var gX = svg.append("g");
-	gX.attr("class","axis");
-	gX.attr("transform","translate("
+  var gX = svg.append("g");
+  gX.attr("class","axis");
+  gX.attr("transform","translate("
 					+0
 					+","
 					+(margin.top)
 					+")"
 		);
-	gX.call(xAxis);
+  gX.call(xAxis);
 
 	
 
-	var gY = svg.append("g");
-	gY.attr("class","axis");
-	gY.attr("transform","translate("
+  var gY = svg.append("g");
+  gY.attr("class","axis");
+  gY.attr("transform","translate("
 					+margin.left
 					+","
 					+0
 					+")"
 			);
-	gY.call(yAxis);
+  gY.call(yAxis);
+
+
+
+   //line function which extracts x,y coordinates of data point d + specifies how to interpolate	
+   var lineFunc = d3.svg.line()
+	  .x(function(d) {    return xScale(d.type)+xScale.rangeBand()/2; })
+	  .y(function(d) {    return yScale(d.score); })
+	  .interpolate('linear');
+
+   for (i=0; i<filteredData.length; i++){
+	
+	drawLine(filteredData[i], lineFunc);	
+   }
+   i
+
+
+
+
+
+
+
 
  
 });
 
+   function drawLine(filteredData, lineFunc){
 
+  	svg.append("path")
+		  .attr('d', lineFunc(filteredData.skills))
+		  .attr('stroke', function(data){ if (filteredData.visible){ return randRGB();} else {return "#ddd"}}) 
+		  .attr('class',  function(data){ if (filteredData.visible){ return "foreground";} else {return "background"}}); 
+   }
 
 
 
@@ -170,14 +198,32 @@ function randRGB(){
 	return rgbstring;
 }
 
-function filterSkills(records, skillset){
-	/*var filteredSet = [];	
+function filterSkills(records, filterM){
+	console.log(records.length);
+	
+	var filtered = [];	
 	for (i=0; i<records.length; i++){
-		if (skillset.indexOf(records[i].name) >=0)
-			filteredSet.push(records[i]);	
-	}*/
-	//FIXME ik filter hier op users ik moet op kolommen filteren!
-	return records;
+		var ok = true;
+		for (var skill in filterM) {
+			console.log(skill)
+  			if (filterM.hasOwnProperty(skill)) {
+				if (records[i].skills[key] < filterM[key]){
+					ok =false;
+					break;
+				}
+			}
+
+  		}
+	
+		var newRec = {};
+		newRec["skills"] = records[i];
+		newRec["visible"]=ok;
+		filtered.push(newRec);
+
+		console.log(newRec);
+	}
+
+	return filtered;
 }
 
 </script>
