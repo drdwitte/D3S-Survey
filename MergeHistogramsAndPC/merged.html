@@ -72,8 +72,8 @@ var jsonData = [
 			
 var width = 1500;
 var height =200;
-var height2 = 900
-var margin = {left:60, top:60, right:60, bottom:0};
+var height2 = 580
+var margin = {left:60, top:20, right:60, bottom:5};
 
 var svg = d3.select("body").append("svg")
 		.attr("width",width)
@@ -89,7 +89,17 @@ var filteredRecords = filterElements(jsonData,selectedElements)
 /* GLOBAL VARIABLE OM DATA DOOR TE GEVEN AAN DE SLOPE. Wordt opgevuld 
 	in de callback van de rects.
  */
-var slopeData = {};
+var slopeData = {
+"Algorithms":0,
+"Visualization":0,
+"StructuredData":0,
+"Optimization":0,
+"UnstructuredData":0,
+"DistributedData":0,
+"MachineLearning":0,
+"BackEnd":0
+
+};
 
 drawHistogramMatrix(filteredRecords);
 
