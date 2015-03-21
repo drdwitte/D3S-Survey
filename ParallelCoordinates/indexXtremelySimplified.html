@@ -207,7 +207,7 @@ function filterSkills(records, filterM){
 		for (var skill in filterM) {
 			console.log(skill)
   			if (filterM.hasOwnProperty(skill)) {
-				if (records[i].skills[key] < filterM[key]){
+				if (records[i]["skills"][skill] < filterM[skill]){
 					ok =false;
 					break;
 				}
