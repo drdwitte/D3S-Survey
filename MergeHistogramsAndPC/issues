@@ -1,0 +1,10 @@
+1) alignering histograms en slopechart nog niet goed en nog veel erger: de histograms staan in alfabetische volgorde, dat is niet de bedoeling!
+
+2) de intiele state is verkeerd, eigenlijk moeten alle histogrammen volledig groen zijn in het uitgangspunt
+
+3) misschien moeten er ook nog extra titels bij de histogrammen om te tonen dat ze matchen
+
+4) hopelijk kunnen we het schoner maken, het is minder mooi dan ik verwacht had
+
+5) heel belangrijke bug: doordat er random kleuren worden toegekend aan de gebruikers veranderen die kleuren bij elke klik => oplossen door de kleuren maar 1x te generen en op te slaan
+per gebruiker!
