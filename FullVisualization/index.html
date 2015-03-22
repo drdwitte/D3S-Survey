@@ -12,7 +12,16 @@ height: 500px;
 #ForceVisualization {
 
 border: 1px solid black;
-width:  1395px;
+width:  1198px;
+height: 500px;
+float: left;
+}
+
+#PopulationVisualizationStatic 
+{
+
+border: 1px solid black;
+width:  298px;
 height: 500px;
 float: left;
 }
@@ -20,9 +29,9 @@ float: left;
 #PopulationVisualization {
 
 border: 1px solid black;
-width:  395px;
+width:  298px;
 height: 500px;
-float: right;
+float: left;
 }
 
 #HistogramMatrixVisualization {
@@ -48,22 +57,28 @@ height: 10px;
 
 <!--d3 aankoppelen! -->
 <script type="text/javascript" src="d3/d3.min.js"></script>
+
+<script type="text/javascript" src="scripts/Force.js"></script>
+<script type="text/javascript" src="scripts/Pop.js"></script>
+<script type="text/javascript" src="scripts/Hist.js"></script>
+<script type="text/javascript" src="scripts/PC.js"></script>
 </head>
 
 
 <body>
-
 <div id="FPContainer">
-	<div id="ForceVisualization"> <p> FV </p>
+	<div id="ForceVisualization">
 	</div>
-	<div id="PopulationVisualization"> <p> PV </p>
+	<div id="PopulationVisualization">
+	</div>
+	<div id="PopulationVisualizationStatic">
 	</div>
 </div>
 <div class="separator"></div>
-<div id="HistogramMatrixVisualization"> <p> HV </p>
+<div id="HistogramMatrixVisualization">
 </div>
 <div class="separator"></div>
-<div id="PCVisualization"> <p> PCV </p>
+<div id="PCVisualization">
 </div>
 
 <script>
@@ -73,7 +88,7 @@ height: 10px;
 //get the external data and trigger the code
 d3.csv("", function(data){
 	createVisualization(data);
-}
+});
 </script>
 
 <script>
@@ -82,88 +97,21 @@ function createVisualization(data){
 
 	//all skills order as in CSV
 	var allSkills = Object.keys(data);
-
-		
-	var selectedSkills = []; //ordered array, showing which distances are currently clicked
 	
 	//double map [skill1][skill2] -> euclidean distance * factor to map between 0 en 1 = 5*numPeople; 
 	var skillDistances = calculateAllDistances(allSkills,data); 
 
-	createForceVisualization(allSkills, skillDistances, selectedSkills);
-}
-
-function calculateAllDistances(skillset,dataset){
-
-	var distanceMatrix = {};
-
-	//initialize matrix
-	for (var i=0; i<skillset.length; i++){
-		distanceMatrix[skillset[i]]={};
-	}
-
-	for (var i=0; i<skillset.length; i++){
-		var si=skillset[i];
-		for (var j=0; j<i; j++){
-			var sj=skillset[j];
-			var dij = calculateSkillDistance(dataset,skillset[i],skillset[j]);
-			distanceMatrix[si][sj] = dij;
-			distanceMatrix[sj][si] = dij;
-		}
-	}
-	return distanceMatrix;
-}
-
-function calculateSkillDistance(data, skilli, skillj){
-
-var dist = 0.0;
-
-for (var i=0; i<data.length; i++){
-	var scorei= data[i][skilli];
-	var scorej= data[i][skillj];	
-	dist+= Math.pow(scorei-scorej,2);
-}
-
-return Math.sqrt(dist);
-
-}
-
-
-</script>
-
-<script>
-function createForceVisualization(allSkills, skillDistances, selectedSkills){
-
-	//force Code
-
-	//bind histogram matrix
-
+	createForceVisualization(allSkills, skillDistances);
+	createStaticPopulationVisualization();
 }
 </script>
 
 
-<script>
-function createHistogramMatrix(){
-	//histogram Code
-	//bind population
-	createPopulationVisualization();	
-	//bind parallel coordinates
-	createPCVisualization();
-}
-</script>
 
-<script>
-function createPopulationVisualization(){
-	//population Code
-	
-}
-</script>
 
-<script>
-function createPCVisualization(){
-	//parallel coordinates Code
-	
-}
-</script>
+
+
+
 
 
 
