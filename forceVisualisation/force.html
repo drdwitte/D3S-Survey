@@ -117,7 +117,7 @@ var force = d3.layout.force()
 // nodes that are connected. (It is, thus, the length we'd
 // like our links to have.)
 
-force.linkDistance(function(links){ return width/5; });
+force.linkDistance(function(links){ return width/10; });
 //force.linkStrength(function(link) { return 0.5; });
 
 force.charge(function(node) {
@@ -147,22 +147,14 @@ force.charge(function(node) {
 var link = svg.selectAll('.link')
     .data(links)
     .enter().append('line')
-    .attr('class', 'link')
-	.attr('x1', function(d) { return nodes[d.source].x; })
-    .attr('y1', function(d) { return nodes[d.source].y; })
-    .attr('x2', function(d) { return nodes[d.target].x; })
-    .attr('y2', function(d) { return nodes[d.target].y; });
+    .attr('class', 'link');
 
 // Now it's the nodes turn. Each node is drawn as a circle.
 
 var node = svg.selectAll('.node')
     .data(nodes)
     .enter().append('circle')
-    .attr('class', 'node')
-	.attr('r', width/25)
-    .attr('cx', function(d) { return d.x; })
-    .attr('cy', function(d) { return d.y; })
-	.call(drag);
+    .attr('class', 'node');
     //.attr('class', 'inactive');
 
 var labels = svg.selectAll('.label')
@@ -183,15 +175,49 @@ var drag = force.drag()
 //assigning a second class to a node
 node.classed('inactive',true);
 
-labels.attr('x',function(d) { return d.x+radius+2; });
-labels.attr('y',function(d) { return d.y-radius-2; });
-labels.text(function(d){ return d.name; })
-
 // We're about to tell the force layout to start its
 // calculations. We do, however, want to know when those
 // calculations are complete, so before we kick things off
 // we'll define a function that we want the layout to call
 // once the calculations are done.
+
+force.on('end', function() {
+
+    // When this function executes, the force layout
+    // calculations have concluded. The layout will
+    // have set various properties in our nodes and
+    // links objects that we can use to position them
+    // within the SVG container.
+
+    // First let's reposition the nodes. As the force
+    // layout runs it updates the `x` and `y` properties
+    // that define where the node should be centered.
+    // To move the node, we set the appropriate SVG
+    // attributes to their new values. We also have to
+    // give the node a non-zero radius so that it's visible
+    // in the container.
+
+    node.attr('r', radius)
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; })
+	.call(drag);;
+
+    // We also need to update positions of the links.
+    // For those elements, the force layout sets the
+    // `source` and `target` properties, specifying
+    // `x` and `y` values in each case.
+
+    link.attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });
+
+
+    labels.attr('x',function(d) { return d.x+radius+2; });
+    labels.attr('y',function(d) { return d.y-radius-2; });
+    labels.text(function(d){ return d.name; })
+
+});
 
 // Okay, everything is set up now so it's time to turn
 // things over to the force layout. Here we go.
@@ -235,6 +261,22 @@ node	.on("mouseover", function(d){
 				;
 
 
+// By the time you've read this far in the code, the force
+// layout has undoubtedly finished its work. Unless something
+// went horribly wrong, you should see two light grey circles
+// connected by a single dark grey line. If you have a screen
+// ruler (such as [xScope](http://xscopeapp.com) handy, measure
+// the distance between the centers of the two circles. It
+// should be somewhere close to the `linkDistance` parameter we
+// set way up in the beginning (480 pixels). That, in the most
+// basic of all nutshells, is what a force layout does. We
+// tell it how far apart we want connected nodes to be, and
+// the layout keeps moving the nodes around until they get
+// reasonably close to that value.
+
+// Of course, there's quite a bit more than that going on
+// under the hood. We'll take a closer look starting with
+// the next example.
 
 function addToActiveList(el){
 	activeList.push(el);
@@ -265,4 +307,3 @@ function tick() {
     </script>
 </body>
 </html>
-
