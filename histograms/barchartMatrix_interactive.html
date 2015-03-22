@@ -62,7 +62,7 @@ var filteredRecords = filterElements(jsonData,selectedElements)
 /* GLOBAL VARIABLE OM DATA DOOR TE GEVEN AAN DE SLOPE. Wordt opgevuld 
 	in de callback van de rects.
  */
-var slopeData = [];
+var slopeData = {};
 
 drawHistogramMatrix(filteredRecords);
 
@@ -135,16 +135,18 @@ function drawOneHistogram(data, dataName, xLeft, xRight){
 					//When selecting d3.selectAll by classname, it returns an array object, with 1 array at index 0.
 					// I am also setting 'clearing the previous selection' (if there was any) by giving all selected
 					// elements back their red fill. You can read up on selections here: https://github.com/mbostock/d3/wiki/Selections
-					var selectionObject = d3.selectAll(classname).attr("style","fill:red");
+					var selectionObject = d3.selectAll(classname).attr("style","fill:green");
 					var selection = selectionObject[0];
 
-					for ( j=0; j<selectedId; j++){
+					for ( j=0; j<i; j++){
 						console.log(selection[j]);
-						selection[j].setAttribute("style","fill:green");
-						var filter = {"axis":dataName, "value":60};
-						slopeData.push(filter);
+						selection[j].setAttribute("style","fill:red");
+
+						
 					}
-					
+					//var filter = {"axis":dataName, "value":i};
+					slopeData[dataName]=i;
+					console.log(i);
 					console.log(slopeData);
 					
 				})
@@ -160,6 +162,8 @@ function drawOneHistogram(data, dataName, xLeft, xRight){
 				.style("fill","white")
 				//.style("font-size","15px")
 				;
+
+	
 
 	//drawing the X and Y-axis + add a caption
 	var xAxis = d3.svg.axis()

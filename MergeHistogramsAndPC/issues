@@ -1,0 +1,14 @@
+1) alignering histograms en slopechart nog niet goed en nog veel erger: de histograms staan in alfabetische volgorde, dat is niet de bedoeling! (het probleem 
+is als volgt: als er bij de filterDictionary waarden ontbreken dan is dat een probleem omdat er ergens op index gematcht wordt! Dictionary dus volledig vullen bij start
+histograms
+
+2) de intiele state is verkeerd, eigenlijk moeten alle histogrammen volledig groen zijn in het uitgangspunt
+
+3) misschien moeten er ook nog extra titels bij de histogrammen om te tonen dat ze matchen
+
+4) hopelijk kunnen we het schoner maken, het is minder mooi dan ik verwacht had
+
+5) heel belangrijke bug: doordat er random kleuren worden toegekend aan de gebruikers veranderen die kleuren bij elke klik => oplossen door de kleuren maar 1x te generen en op te slaan
+per gebruiker!
+
+6) de background lines moeten onder de foreground zitten, nu zitten er soms grijze boven gekleurde, dit is nog vlotjes op te lossen

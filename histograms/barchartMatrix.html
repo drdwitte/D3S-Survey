@@ -16,21 +16,7 @@
 <body>
 
 <script>
-
-function filterElements(elements, names){
-
-	var filtered = [];
-	console.log(names)
-	for (i=0; i<elements.length; i++){
-		console.log(elements[i].name);
-
-		if (names.indexOf(elements[i].name)>=0)
-			filtered.push(elements[i]);		
-	} 
-
-	return filtered;
-}
-
+/* main script body */
 
 var jsonData = [
 				{"name":"Algorithms","freqs":[55,60,59,50,17]},
@@ -56,10 +42,7 @@ var jsonData = [
 				{"name":"UnstructuredData","freqs":[69,61,53,41,17]},
 				{"name":"Visualization","freqs":[42,63,63,48,25]}
 			];
-
-
-
-
+			
 var width = 1500;
 var height =300;
 var margin = {left:60, top:60, right:60, bottom:60};
@@ -73,6 +56,22 @@ var selectedElements = ["Algorithms", "Visualization", "StructuredData", "Optimi
 var filteredRecords = filterElements(jsonData,selectedElements) 
 
 drawHistogramMatrix(filteredRecords);
+
+/* Loose functions */
+
+function filterElements(elements, names){
+
+	var filtered = [];
+	console.log(names)
+	for (i=0; i<elements.length; i++){
+		console.log(elements[i].name);
+
+		if (names.indexOf(elements[i].name)>=0)
+			filtered.push(elements[i]);		
+	} 
+
+	return filtered;
+}
 
 function drawHistogramMatrix(data){
 

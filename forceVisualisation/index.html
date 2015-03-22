@@ -5,10 +5,16 @@
     <title>Force Layout Example 1</title>
     <style>
 
-.node {
+.node.inactive {
     fill: #ccc;
     stroke: #fff;
     stroke-width: 2px;
+}
+
+.node.active {
+    fill: #ccc;
+    stroke: rgb(255,0,0);
+    stroke-width: 5px;
 }
 
 .link {
@@ -19,7 +25,7 @@
     </style>
 </head>
 <body>
-    <script src='http://d3js.org/d3.v3.min.js'></script>
+<script type="text/javascript" src="d3/d3.min.js"></script>
     <script>
 
 
@@ -75,6 +81,8 @@ var skills = [
 
 var nodes = skills;*/
 
+var activeList = [];
+
 var radius = width /50
 
 var nodes = [
@@ -126,7 +134,7 @@ var force = d3.layout.force()
 
 force.linkDistance(function(links){ return links.dist; });
 force.linkStrength(function(link) { return 0.5; });
-force.charge(function(d){return 10;})
+force.charge(function(d){return 20;})
 
 // Next we'll add the nodes and links to the visualization.
 // Note that we're just sticking them into the SVG container
@@ -155,6 +163,7 @@ var node = svg.selectAll('.node')
     .data(nodes)
     .enter().append('circle')
     .attr('class', 'node');
+    //.attr('class', 'inactive');
 
 var labels = svg.selectAll('.label')
     .data(nodes)
@@ -162,9 +171,17 @@ var labels = svg.selectAll('.label')
     .attr('class', 'label');
 
 
+var nodesClicked = svg.append("text");
+	nodesClicked.attr("x",width/2);
+	nodesClicked.attr("y",height-10);
+	nodesClicked.text("Nothing Clicked");
+		
+
 var drag = force.drag()
     .on("dragstart", dragstart);
     
+//assigning a second class to a node
+node.classed('inactive',true);
 
 // We're about to tell the force layout to start its
 // calculations. We do, however, want to know when those
@@ -216,6 +233,41 @@ force.on('end', function() {
 force.start();
 
 
+node	.on("mouseover", function(d){
+				
+					var currentB = d3.select(this);
+					currentB.transition()
+					.style("fill","blue");
+				
+				})
+
+	.on("mouseout", function(d){
+						
+				
+					var currentB = d3.select(this);
+					currentB.transition()
+						.style("fill" ,"#ccc");
+				})
+				
+	.on("click", function(d){
+					var currentB = d3.select(this);
+					if (currentB.classed("inactive")){
+						currentB.classed("inactive",false);
+						currentB.classed("active",true);
+						addToActiveList(d.name);
+					} else {
+						currentB.classed("active",false);
+						currentB.classed("inactive",true);
+						removeFromActiveList(d.name);					
+					}
+
+					nodesClicked.text(activeList);
+					
+					
+
+				})
+				;
+
 
 // By the time you've read this far in the code, the force
 // layout has undoubtedly finished its work. Unless something
@@ -233,6 +285,15 @@ force.start();
 // Of course, there's quite a bit more than that going on
 // under the hood. We'll take a closer look starting with
 // the next example.
+
+function addToActiveList(el){
+	activeList.push(el);
+}
+
+function removeFromActiveList(el){
+	activeList.splice(activeList.indexOf(el));
+}
+
 
 function dragstart(d) {
   d3.select(this).classed("fixed", d.fixed = true);
