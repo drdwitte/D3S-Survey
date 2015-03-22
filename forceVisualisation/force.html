@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Force Layout Example 1</title>
+    <style>
+
+.node.inactive {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+
+.node.active {
+    fill: #ccc;
+    stroke: rgb(255,0,0);
+    stroke-width: 5px;
+}
+
+.link {
+    stroke: #777;
+    stroke-width: 2px;
+}
+
+    </style>
+</head>
+<body>
+<script type="text/javascript" src="d3/d3.min.js"></script>
+    <script>
+
+
+//http://bl.ocks.org/sathomas/11550728
+
+// Define the dimensions of the visualization. We're using
+// a size that's convenient for displaying the graphic on
+// http://jsDataV.is
+
+var width = 1000,
+    height = 600;
+
+// Define the data for the example. In general, a force layout
+// requires two data arrays. The first array, here named `nodes`,
+// contains the object that are the focal point of the visualization.
+// The second array, called `links` below, identifies all the links
+// between the nodes. (The more mathematical term is "edges.")
+
+// For the simplest possible example we only define two nodes. As
+// far as D3 is concerned, nodes are arbitrary objects. Normally the
+// objects wouldn't be initialized with `x` and `y` properties like
+// we're doing below. When those properties are present, they tell
+// D3 where to place the nodes before the force layout starts its
+// magic. More typically, they're left out of the nodes and D3 picks
+// random locations for each node. We're defining them here so we can
+// get a consistent application of the layout which lets us see the
+// effects of different properties.
+
+
+var activeList = [];
+
+var radius = 10;
+
+var nodes = [
+		    { name: "Algorithms", "group":"math"},
+  		    { name: "Simulation", "group":"statistics"},
+    		{ name: "Math","group":"math" }, 
+    		{ name: "ProductDevelopment","group":"marketing" },
+    		{ name: "Business", "group":"marketing" },
+    		{ name: "SpatialStatistics", "group":"statistics" },
+    		{ name: "Surveys", "group":"marketing" },
+    		{ name: "Back-End", "group":"programming" },
+    		{ name: "Front-End", "group":"programming" },
+    		{ name: "DataWrangling", "group":"modeling" },
+    		{ name: "Statistics", "group":"statistics" }
+	];
+
+// The `links` array contains objects with a `source` and a `target`
+// property. The values of those properties are the indices in
+// the `nodes` array of the two endpoints of the link.
+
+var links = [
+    { source: 2, target: 0},
+    { source: 10, target: 2},
+    { source: 10, target: 1},
+    { source: 10, target: 5},
+    { source: 4, target:3 },
+    { source: 4, target:6},
+    { source: 4, target: 10},
+    { source: 7, target: 4},
+    { source: 7, target: 8},
+    { source: 9, target: 7}
+];
+
+// Here's were the code begins. We start off by creating an SVG
+// container to hold the visualization. We only need to specify
+// the dimensions for this container.
+
+var svg = d3.select('body').append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+// Now we create a force layout object and define its properties.
+// Those include the dimensions of the visualization and the arrays
+// of nodes and links.
+
+var force = d3.layout.force()
+    .size([width, height])
+    .nodes(nodes)
+    .links(links)
+	    .on("tick", tick);
+
+// There's one more property of the layout we need to define,
+// its `linkDistance`. That's generally a configurable value and,
+// for a first example, we'd normally leave it at its default.
+// Unfortunately, the default value results in a visualization
+// that's not especially clear. This parameter defines the
+// distance (normally in pixels) that we'd like to have between
+// nodes that are connected. (It is, thus, the length we'd
+// like our links to have.)
+
+force.linkDistance(function(links){ return width/5; });
+//force.linkStrength(function(link) { return 0.5; });
+
+force.charge(function(node) {
+        if (node.group === 'math')  return -1000;
+        if (node.group === 'marketing')  return -3000;
+        if (node.group === 'programming')  return -5000;
+        if (node.group === 'statistics')  return -7000;
+        if (node.group === 'modeling')  return -9000;
+    });
+
+// Next we'll add the nodes and links to the visualization.
+// Note that we're just sticking them into the SVG container
+// at this point. We start with the links. The order here is
+// important because we want the nodes to appear "on top of"
+// the links. SVG doesn't really have a convenient equivalent
+// to HTML's `z-index`; instead it relies on the order of the
+// elements in the markup. By adding the nodes _after_ the
+// links we ensure that nodes appear on top of links.
+
+// Links are pretty simple. They're just SVG lines, and
+// we're not even going to specify their coordinates. (We'll
+// let the force layout take care of that.) Without any
+// coordinates, the lines won't even be visible, but the
+// markup will be sitting inside the SVG container ready
+// and waiting for the force layout.
+
+var link = svg.selectAll('.link')
+    .data(links)
+    .enter().append('line')
+    .attr('class', 'link')
+	.attr('x1', function(d) { return nodes[d.source].x; })
+    .attr('y1', function(d) { return nodes[d.source].y; })
+    .attr('x2', function(d) { return nodes[d.target].x; })
+    .attr('y2', function(d) { return nodes[d.target].y; });
+
+// Now it's the nodes turn. Each node is drawn as a circle.
+
+var node = svg.selectAll('.node')
+    .data(nodes)
+    .enter().append('circle')
+    .attr('class', 'node')
+	.attr('r', width/25)
+    .attr('cx', function(d) { return d.x; })
+    .attr('cy', function(d) { return d.y; })
+	.call(drag);
+    //.attr('class', 'inactive');
+
+var labels = svg.selectAll('.label')
+    .data(nodes)
+    .enter().append('text')
+    .attr('class', 'label');
+
+
+var nodesClicked = svg.append("text");
+	nodesClicked.attr("x",width/2);
+	nodesClicked.attr("y",height-10);
+	nodesClicked.text("Nothing Clicked");
+		
+
+var drag = force.drag()
+    .on("dragstart", dragstart);
+    
+//assigning a second class to a node
+node.classed('inactive',true);
+
+labels.attr('x',function(d) { return d.x+radius+2; });
+labels.attr('y',function(d) { return d.y-radius-2; });
+labels.text(function(d){ return d.name; })
+
+// We're about to tell the force layout to start its
+// calculations. We do, however, want to know when those
+// calculations are complete, so before we kick things off
+// we'll define a function that we want the layout to call
+// once the calculations are done.
+
+// Okay, everything is set up now so it's time to turn
+// things over to the force layout. Here we go.
+
+force.start();
+
+
+node	.on("mouseover", function(d){
+				
+					var currentB = d3.select(this);
+					currentB.transition()
+					.style("fill","blue");
+				
+				})
+
+	.on("mouseout", function(d){
+						
+				
+					var currentB = d3.select(this);
+					currentB.transition()
+						.style("fill" ,"#ccc");
+				})
+				
+	.on("click", function(d){
+					var currentB = d3.select(this);
+					if (currentB.classed("inactive")){
+						currentB.classed("inactive",false);
+						currentB.classed("active",true);
+						addToActiveList(d.name);
+					} else {
+						currentB.classed("active",false);
+						currentB.classed("inactive",true);
+						removeFromActiveList(d.name);					
+					}
+
+					nodesClicked.text(activeList);
+					
+					
+
+				})
+				;
+
+
+
+function addToActiveList(el){
+	activeList.push(el);
+}
+
+function removeFromActiveList(el){
+	activeList.splice(activeList.indexOf(el));
+}
+
+
+function dragstart(d) {
+  d3.select(this).classed("fixed", d.fixed = true);
+}
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+
+ labels.attr('x',function(d) { return d.x+radius+2; });
+    labels.attr('y',function(d) { return d.y-radius-2; });
+}
+
+    </script>
+</body>
+</html>
+
