@@ -6,14 +6,23 @@
 
 #FPContainer {
 width:  1800px;
-height: 500px;
+height: 600px;
 }
 
 #ForceVisualization {
 
 border: 1px solid black;
-width:  1195px;
-height: 500px;
+width:  600px;
+height: 600px;
+float: left;
+}
+
+#ForceScatter
+{
+
+border: 1px solid black;
+width:  395px;
+height: 600px;
 float: left;
 }
 
@@ -21,16 +30,16 @@ float: left;
 {
 
 border: 1px solid black;
-width:  295px;
-height: 500px;
+width:  395px;
+height: 600px;
 float: left;
 }
 
 #PopulationVisualization {
 
 border: 1px solid black;
-width:  295px;
-height: 500px;
+width:  395px;
+height: 600px;
 float: left;
 }
 
@@ -53,6 +62,23 @@ width:  1800px;
 height: 10px;
 }
 
+.node.inactive {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+
+.node.active {
+    fill: #ccc;
+    stroke: rgb(255,0,0);
+    stroke-width: 5px;
+}
+
+.link {
+    stroke: #777;
+    stroke-width: 2px;
+}
+
 </style>
 
 <!--d3 aankoppelen! -->
@@ -69,10 +95,13 @@ height: 10px;
 <div id="FPContainer">
 	<div id="ForceVisualization">
 	</div>
-	<div id="PopulationVisualization">
+	<div id="ForceScatter">
 	</div>
 	<div id="PopulationVisualizationStatic">
+	</div>	
+	<div id="PopulationVisualization">
 	</div>
+	
 </div>
 <div class="separator"></div>
 <div id="HistogramMatrixVisualization">
@@ -106,6 +135,16 @@ function stripPX(cssPX){
 
 return parseInt(cssPX.substr(0,cssPX.length-2));
 
+}
+
+function randColor(){
+	return parseInt(Math.random()*256);
+}
+
+function randRGB(){
+
+	var rgbstring = "rgb("+randColor()+","+randColor()+","+randColor()+")";
+	return rgbstring;
 }
 
 </script>

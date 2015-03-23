@@ -35,41 +35,20 @@ function calculateSkillDistance(data, skilli, skillj){
 
 function generateFrequencyDistribution(dataset, allSkills){
 
-	
+	var freqDistr = [];
 
+	for (var j=0; j<allSkills.length; j++){	
+		counts = [0,0,0,0,0];
+		for (var i=0; i<dataset.length; i++){
+			var score = dataset[i][allSkills[j]];
+			counts[score-1]++;
+					
+		}
+		freqDistr.push({ name:allSkills[j], freqs:counts });	
 
-	var mockup = [
-					{"name":"Algorithms","freqs":[55,60,59,50,17]},
-					{"name":"BackEnd","freqs":[85,67,35,36,18]},
-					{"name":"Bayesian","freqs":[88,74,84,24,7]},
-					{"name":"DistributedData","freqs":[56,87,61,26,11]},
-					{"name":"Business","freqs":[38,54,43,73,33]},
-					{"name":"ClassicalStats","freqs":[33,51,70,58,29]},
-					{"name":"DataWrangling","freqs":[34,45,53,70,39]},
-					{"name":"FrontEnd","freqs":[67,72,50,40,12]},
-					{"name":"GraphModels","freqs":[81,73,46,29,12]},
-					{"name":"MachineLearning","freqs":[51,71,42,53,24]},
-					{"name":"Math","freqs":[30,45,77,56,33]},
-					{"name":"Optimization","freqs":[54,72,66,38,11]},
-					{"name":"ProductDev","freqs":[50,48,57,55,31]},
-					{"name":"Science","freqs":[60,51,47,46,37]},
-					{"name":"Simulation","freqs":[96,67,55,20,8]},
-					{"name":"GIS","freqs":[123,70,25,18,5]},
-					{"name":"StructuredData" ,"freqs":[40,39,53,66,43]},
-					{"name":"Marketing","freqs":[74,81,50,25,11]},
-					{"name":"SysAdmin","freqs":[101,54,43,32,11]},
-					{"name":"TimeSeries","freqs":[61,65,67,34,14]},
-					{"name":"UnstructuredData","freqs":[69,61,53,41,17]},
-					{"name":"Visualization","freqs":[42,63,63,48,25]}
-				];
-
-	return mockup;
+	}
+	return freqDistr;
 }
-
-
-
-
-
 
 function createForceVisualization(allSkills, data){
 
@@ -77,24 +56,215 @@ function createForceVisualization(allSkills, data){
 	var selectedSkills = ["Algorithms","BackEnd","Bayesian","DistributedData","Business","ClassicalStats","DataWrangling","FrontEnd","GraphModels","MachineLearning","Math","Optimization",
 	"ProductDev","Science","Simulation","GIS","StructuredData","Marketing","SysAdmin","TimeSeries","UnstructuredData","Visualization"]; 
 
+	var activeList = [];
 
+	var div = d3.select("#ForceVisualization");
 
-	d3.select("#ForceVisualization").append("p").text("Force Visualization");
+	//create svg
+	div.selectAll("svg").remove();
+	var svg = div.append("svg")		
+			.attr("width",stripPX(div.style("width")))
+			.attr("height",stripPX(div.style("height")))
+			;
+	var canvas = {svg:svg, margin:{top:5,bottom:5,left:5,right:5}};	
+
+	var width = svg.attr("width");
+	var height = svg.attr("height");
+	var radius = 20;
 
 	//generate skill distances;
 	//double map [skill1][skill2] -> euclidean distance * factor to map between 0 en 1 = 5*numPeople; 
 	var skillDistances = calculateAllDistances(allSkills,data);
-	//console.log(skillDistances);
 
 	var freqDistr = generateFrequencyDistribution(data, allSkills);
 
 	//***
 	//force Code
+	//var cutoff = 15;
+	
+	
+	var nodes = [];
+	for (var i=0; i<allSkills.length; i++){
+		nodes.push({name:allSkills[i], x:(0.5*width), y:(0.5*height)});	
+	}
+
+
+	var links = generateLinks(skillDistances, allSkills);
+
+
+	var linksPerNode = calcLinksPerNode(links, nodes.length);
+	console.log(linksPerNode);
+
+
+	var force = d3.layout.force()
+    		.size([width, height])
+    		.nodes(nodes)
+    		.links(links)
+	    	.on("tick", tick);
+
+	force.linkDistance(function(links){ return links.dist; });
+	force.linkStrength(function(link) { return 0.99; });
+	force.charge(function(d){return -1000;})
+	force.gravity(0.33);
+
+	var link = svg.selectAll('.link')
+	    .data(links)
+	    .enter().append('line')
+	    .attr('class', 'link');
+
+	// Now it's the nodes turn. Each node is drawn as a circle.
+
+	var node = svg.selectAll('.node')
+	    .data(nodes)
+	    .enter().append('circle')
+	    .attr('class', 'node')
+	    .style('fill', randRGB)
+	    .attr('r', function(d,i){ return 4*linksPerNode[i]+radius-10;})	
+		;
+	    
+            
+
+	var labels = svg.selectAll('.label')
+	    .data(nodes)
+	    .enter().append('text')
+	    .attr('class', 'label');
+
+
+	var nodesClicked = svg.append("text");
+		nodesClicked.attr("x",width/5);
+		nodesClicked.attr("y",height-10);
+		nodesClicked.text("Nothing Clicked");
+		
+
+	var drag = force.drag()
+	    .on("dragstart", dragstart);
+	    
+	//assigning a second class to a node
+	node.classed('inactive',true);
+
+force.on('end', function() {
+
+    node.attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; })
+	.call(drag);
+
+    // We also need to update positions of the links.
+    // For those elements, the force layout sets the
+    // `source` and `target` properties, specifying
+    // `x` and `y` values in each case.
+
+    link.attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });
+
+
+    labels.attr('x',function(d) { return d.x+radius-1; });
+    labels.attr('y',function(d) { return d.y-radius+1; });
+    labels.text(function(d){ return d.name; })
+
+	});
+
+	force.start();
+
+
+	node.on("mouseover", function(d){
+				
+						var currentB = d3.select(this);
+						currentB.transition()
+						.style("fill","blue");
+				
+					})
+
+		.on("mouseout", function(d){
+						
+				
+						var currentB = d3.select(this);
+						currentB.transition()
+							.style("fill" ,"#ccc");
+					})
+				
+		.on("click", function(d){
+						var currentB = d3.select(this);
+						if (currentB.classed("inactive")){
+							currentB.classed("inactive",false);
+							currentB.classed("active",true);
+							addToActiveList(d.name);
+						} else {
+							currentB.classed("active",false);
+							currentB.classed("inactive",true);
+							removeFromActiveList(d.name);					
+						}
+
+						nodesClicked.text(activeList);
+					
+					
+
+					})
+					;
+
+
+	function addToActiveList(el){
+		activeList.push(el);
+	}
+
+	function removeFromActiveList(el){
+		activeList.splice(activeList.indexOf(el));
+	}
+
+
+	function dragstart(d) {
+	  d3.select(this).classed("fixed", d.fixed = true);
+	}
+
+	function tick() {
+	  link.attr("x1", function(d) { return d.source.x; })
+	      .attr("y1", function(d) { return d.source.y; })
+	      .attr("x2", function(d) { return d.target.x; })
+	      .attr("y2", function(d) { return d.target.y; });
+
+	  node.attr("cx", function(d) { return d.x; })
+	      .attr("cy", function(d) { return d.y; });
+
+	 labels.attr('x',function(d) { return d.x+radius-1; });
+	    labels.attr('y',function(d) { return d.y-radius+1; });
+	}
+
 	//***
 
 
 	//bind histogram matrix to click event
 	createHistogramMatrix(selectedSkills,data, freqDistr);
 
+}
+
+function generateLinks(skillDist, skills){
+	
+	var links = [];
+	for (var i=0; i<skills.length; i++){
+		for (var j=0; j<i; j++){
+			var dist = 50*skillDist[skills[i]][skills[j]];
+			
+			if (dist < 15){
+			    links.push({ source: i, target: j, dist:12*dist });				
+			}
+		}
+	}
+	return links;
+
+}
+
+function calcLinksPerNode(links, numNodes){
+	var numLinks = [];
+	for (var i=0; i<numNodes; i++){
+		numLinks.push(0);	
+	}
+
+	for (var i=0; i<links.length; i++){
+		numLinks[links[i].source]++;
+		numLinks[links[i].target]++;
+	}
+
+	return numLinks;
 }
 

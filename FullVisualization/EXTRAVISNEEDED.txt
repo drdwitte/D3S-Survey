@@ -1,0 +1,3 @@
+what are close skills: correlation and anticorrelation!
+
+add an extra pane where the two most recently selected skills are compared in a scatterplot (all scores on X(skill1), Y(skill2))
