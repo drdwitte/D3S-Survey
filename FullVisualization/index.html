@@ -12,7 +12,7 @@ height: 500px;
 #ForceVisualization {
 
 border: 1px solid black;
-width:  1198px;
+width:  1195px;
 height: 500px;
 float: left;
 }
@@ -21,7 +21,7 @@ float: left;
 {
 
 border: 1px solid black;
-width:  298px;
+width:  295px;
 height: 500px;
 float: left;
 }
@@ -29,7 +29,7 @@ float: left;
 #PopulationVisualization {
 
 border: 1px solid black;
-width:  298px;
+width:  295px;
 height: 500px;
 float: left;
 }
@@ -83,10 +83,10 @@ height: 10px;
 
 <script>
 
-
+var datasetCSV = "data/DSSurveyData_cleaned.csv";
 
 //get the external data and trigger the code
-d3.csv("", function(data){
+d3.csv(datasetCSV, function(data){
 	createVisualization(data);
 });
 </script>
@@ -94,16 +94,20 @@ d3.csv("", function(data){
 <script>
 function createVisualization(data){
 
-
 	//all skills order as in CSV
-	var allSkills = Object.keys(data);
-	
-	//double map [skill1][skill2] -> euclidean distance * factor to map between 0 en 1 = 5*numPeople; 
-	var skillDistances = calculateAllDistances(allSkills,data); 
-
-	createForceVisualization(allSkills, skillDistances);
-	createStaticPopulationVisualization();
+	var allKeys = Object.keys(data[0]);
+	var metadatasize = 5
+	var allSkills = allKeys.slice(metadatasize,allKeys.length);
+	var metadata =  allKeys.slice(0,metadatasize); //ID, Gender, ...
+	createForceVisualization(allSkills, data);
 }
+
+function stripPX(cssPX){
+
+return parseInt(cssPX.substr(0,cssPX.length-2));
+
+}
+
 </script>
 
 
