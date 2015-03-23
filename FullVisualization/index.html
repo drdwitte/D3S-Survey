@@ -45,7 +45,7 @@ float: left;
 
 #HistogramMatrixVisualization {
 
-border: 1px solid black;
+/*border: 1px solid black;*/
 width:  1800px;
 height: 300px;
 }
@@ -83,7 +83,7 @@ height: 10px;
 
 <!--d3 aankoppelen! -->
 <script type="text/javascript" src="d3/d3.min.js"></script>
-
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script type="text/javascript" src="scripts/Force.js"></script>
 <script type="text/javascript" src="scripts/Pop.js"></script>
 <script type="text/javascript" src="scripts/Hist.js"></script>
@@ -128,7 +128,7 @@ function createVisualization(data){
 	var metadatasize = 5
 	var allSkills = allKeys.slice(metadatasize,allKeys.length);
 	var metadata =  allKeys.slice(0,metadatasize); //ID, Gender, ...
-	createForceVisualization(allSkills, data);
+	createForceVisualization(allSkills, data, metadata);
 }
 
 function stripPX(cssPX){

@@ -1,7 +1,7 @@
 	
-function createHistogramMatrix(activeSkills, dataset, freqDistrSkills){
+function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata){
 
-	console.log("active:"+activeSkills);
+
 	//histogram Code
 	var div = d3.select("#HistogramMatrixVisualization");
 	
@@ -20,11 +20,12 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills){
 	//filterDictionary contains for each skill the cutoff value to filter individuals	
 	var filterDictionary = initializeFilterDictionary(activeSkills);	
 
+	//convert the input dataset to a format where the keys are explicitely in the value of the fields
+	var convertedCSV = convertCSV(dataset,activeSkills, metadata);
 
 	drawHistogramMatrix(filteredDistr, canvas, filterDictionary);
 
-	//convert the input dataset to a format where the keys are explicitely in the value of the fields
-	var convertedCSV = convertCSV(dataset,activeSkills);
+	
 	
 	//bind population
 	createPopulationVisualization(convertedCSV);
@@ -101,7 +102,9 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
 					}
 					filter[dataName]=i;
 
-					//drawSlopeDiagram();
+
+					createPCVisualization();
+	
 					
 				})
 			;
@@ -173,17 +176,22 @@ function generateAxes(xScale,yScale,canvas,xLeft,caption){
 
 
 
-function convertCSV(csvObject, active){
+function convertCSV(csvObject, active, metadata){
 	var converted = [];
 	for (var i=0; i<csvObject.length; i++){
-		converted.push(convertSingleRec(csvObject[i],active));	
+		converted.push(convertSingleRec(csvObject[i],active,metadata));	
 	}
 	return converted;
 }
 
-function convertSingleRec(record, active){
+function convertSingleRec(record, active, metadata){
 
 	var converted = {};
+
+	for (var i=0; i<metadata.length; i++){
+		converted[metadata[i]] = record[metadata[i]];
+	}
+
 	converted["visible"]=false;
 	converted["skills"] =[];
 	for (var i=0; i<active.length; i++){

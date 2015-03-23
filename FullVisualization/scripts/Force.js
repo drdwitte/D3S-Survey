@@ -50,11 +50,11 @@ function generateFrequencyDistribution(dataset, allSkills){
 	return freqDistr;
 }
 
-function createForceVisualization(allSkills, data){
+function createForceVisualization(allSkills, data, metadata){
 
 	//ordered array, showing which distances are currently clicked
-	var selectedSkills = ["Algorithms","BackEnd","Bayesian","DistributedData","Business","ClassicalStats","DataWrangling","FrontEnd","GraphModels","MachineLearning","Math","Optimization",
-	"ProductDev","Science","Simulation","GIS","StructuredData","Marketing","SysAdmin","TimeSeries","UnstructuredData","Visualization"]; 
+	var selectedSkills = ["Algorithms","BackEnd","Bayesian","DistributedData","Business"/*,"ClassicalStats","DataWrangling","FrontEnd","GraphModels","MachineLearning","Math","Optimization",
+	"ProductDev","Science","Simulation","GIS","StructuredData","Marketing","SysAdmin","TimeSeries","UnstructuredData","Visualization"*/]; 
 
 	var activeList = [];
 
@@ -93,7 +93,7 @@ function createForceVisualization(allSkills, data){
 
 
 	var linksPerNode = calcLinksPerNode(links, nodes.length);
-	console.log(linksPerNode);
+
 
 
 	var force = d3.layout.force()
@@ -206,7 +206,7 @@ force.on('end', function() {
 						}
 
 						nodesClicked.text(activeList);
-							createHistogramMatrix(activeList,data, freqDistr);
+							createHistogramMatrix(activeList,data, freqDistr, metadata);
 					})
 					;
 
@@ -215,8 +215,14 @@ force.on('end', function() {
 		activeList.push(el);
 	}
 
-	function removeFromActiveList(el){
+	function removeFromActiveListBackup(el){
 		activeList.splice(activeList.indexOf(el));
+	}
+
+	function removeFromActiveList(el){
+		var position = activeList.indexOf(el);
+		//console.log("position " + position);
+		if ( ~position ) activeList.splice(position, 1);
 	}
 
 
@@ -241,7 +247,7 @@ force.on('end', function() {
 
 
 	//bind histogram matrix to click event
-	createHistogramMatrix(selectedSkills,data, freqDistr);
+	createHistogramMatrix(selectedSkills,data, freqDistr,metadata);
 
 }
 
