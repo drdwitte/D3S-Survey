@@ -166,13 +166,21 @@ force.on('end', function() {
 	});
 
 	force.start();
+	//console.log(force.alpha());
+	/*for (var i = 0; i < 5000; ++i){ force.tick(); //control the number of ticks (can also loop until force.alpha is acceptable value
+		//console.log(force.alpha());
+	}
+	force.stop();	*/
 
-
-	node.on("mouseover", function(d){
+	/*node.on("mouseover", function(d){
 				
+
 						var currentB = d3.select(this);
+						var currentColor = currentB.style("fill");
 						currentB.transition()
+						.attr("backupColor",currentColor) 						
 						.style("fill","blue");
+						
 				
 					})
 
@@ -180,11 +188,12 @@ force.on('end', function() {
 						
 				
 						var currentB = d3.select(this);
+						var backupColor = currentB.attr("backupColor");
 						currentB.transition()
-							.style("fill" ,"#ccc");
-					})
+							.style("fill" ,backupColor);
+					})*/
 				
-		.on("click", function(d){
+		node.on("click", function(d){
 						var currentB = d3.select(this);
 						if (currentB.classed("inactive")){
 							currentB.classed("inactive",false);
@@ -197,9 +206,7 @@ force.on('end', function() {
 						}
 
 						nodesClicked.text(activeList);
-					
-					
-
+							createHistogramMatrix(activeList,data, freqDistr);
 					})
 					;
 

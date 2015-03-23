@@ -1,6 +1,7 @@
 	
 function createHistogramMatrix(activeSkills, dataset, freqDistrSkills){
 
+	console.log("active:"+activeSkills);
 	//histogram Code
 	var div = d3.select("#HistogramMatrixVisualization");
 	
@@ -20,7 +21,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills){
 	var filterDictionary = initializeFilterDictionary(activeSkills);	
 
 
-	drawHistogramMatrix(freqDistrSkills, canvas, filterDictionary);
+	drawHistogramMatrix(filteredDistr, canvas, filterDictionary);
 
 	//convert the input dataset to a format where the keys are explicitely in the value of the fields
 	var convertedCSV = convertCSV(dataset,activeSkills);
