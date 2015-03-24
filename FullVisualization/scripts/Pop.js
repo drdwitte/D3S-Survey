@@ -195,34 +195,28 @@ function drawPieChart(distr, canvas, yOffset, boxHeight, caption, type){
 }
 
 function updatePieCharts(convertedCSV){
-	var genderDistr = calculateDistribution(filteredCSV,"Gender");
-	var ageDistr = calculateDistribution(filteredCSV,"Age");
-	var degreeDistr =  calculateDistribution(filteredCSV,"Degree");
-	var experienceDistr =  calculateDistributionExperience(filteredCSV,"Experience");
+	var genderDistr = calculateDistribution(convertedCSV,"Gender");
+	var ageDistr = calculateDistribution(convertedCSV,"Age");
+	var degreeDistr =  calculateDistribution(convertedCSV,"Degree");
+	var experienceDistr =  calculateDistributionExperience(convertedCSV,"Experience");
 	
 	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
-	var names = ["Gender-nonstatic", "Age-nonstatic", "Highest degree-nonstatic", "Experience-nonstatic"];
+	var ids = ["Gender-nonstatic", "Age-nonstatic", "Highest degree-nonstatic", "Experience-nonstatic"];
 	
-	var data = [
-					{"value":20},
-					{"value":2},
-					{"value":50},
-					{"value":20},
-					{"value":39}
-				];
 	
-	updatePieChart(data);
+	for( var i = 0; i<distributions.lenght; i++){
+		var id = ids[i];
+		var data = distributions[i];
+		
+		updatePieChart(id, data);
+	}
 }
 
-function updatePieChart(data){
-	// we have typed this already before
+function updatePieChart(id, data){
 	var div = d3.select(".container");
-	var height = div.selectAll("svg").attr("height");
+	var height = div.selectAll("svg").attr("height");	
 	
-	console.log("update height " + height);
-	
-	
-	var boxHeight = height/data.length;
+	var boxHeight = height/4; //4 is the length of the distributions array in previous function
 	
 	var radius = boxHeight/2*0.75;
 	
@@ -233,7 +227,7 @@ function updatePieChart(data){
 	var pie = d3.layout.pie()
 					.value(function(d){ return d.value;});
 
-	d3.select("#Age-nonstatic").selectAll("path")			
+	d3.select(id).selectAll("path")			
 			.data(pie(data))
 			.transition().duration(2000)
 			.attr("d",arc);
