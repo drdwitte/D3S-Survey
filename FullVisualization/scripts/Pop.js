@@ -3,6 +3,10 @@ var color = d3.scale.category20b();
 
 function createPopulationVisualization(convertedCSV, metadata){
 
+
+	//
+	filteredCSV = convertedCSV.slice(0, 0 + 100);
+
 	//population Code
 	var div = d3.select("#PopulationVisualization");
 	div.select("h1").remove();
@@ -28,13 +32,13 @@ function createPopulationVisualization(convertedCSV, metadata){
 
 	//columns of interest: ID, Age, Gender, Degree, Experience
 	
-	var genderDistr = calculateDistribution(convertedCSV,"Gender");
-	var ageDistr = calculateDistribution(convertedCSV,"Age");
-	var degreeDistr =  calculateDistribution(convertedCSV,"Degree");
-	//var experience =  calculateDistribution(convertedCSV,"Degree");
+	var genderDistr = calculateDistribution(filteredCSV,"Gender");
+	var ageDistr = calculateDistribution(filteredCSV,"Age");
+	var degreeDistr =  calculateDistribution(filteredCSV,"Degree");
+	var experienceDistr =  calculateDistributionExperience(filteredCSV,"Experience");
 	
-	var distributions = [genderDistr, ageDistr, degreeDistr];
-	var names = ["Gender", "Age", "Highest degree"];
+	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
+	var names = ["Gender", "Age", "Highest degree", "Experience"];
 
 	drawPieCharts(distributions, canvas, names);
 
@@ -71,10 +75,10 @@ function createStaticPopulationVisualization(convertedCSV, metadata){
 	var genderDistr = calculateDistribution(convertedCSV,"Gender");
 	var ageDistr = calculateDistribution(convertedCSV,"Age");
 	var degreeDistr =  calculateDistribution(convertedCSV,"Degree");
-	//var experience =  calculateDistribution(convertedCSV,"Degree");
+	var experienceDistr =  calculateDistributionExperience(convertedCSV,"Experience");
 	
-	var distributions = [genderDistr, ageDistr, degreeDistr];
-	var names = ["Gender", "Age", "Highest degree"];
+	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
+	var names = ["Gender", "Age", "Highest degree", "Experience"];
 
 	drawPieCharts(distributions, canvas, names);
 
@@ -111,6 +115,37 @@ function calculateDistribution(csv,metaSkill){
 	return differentFormat;
 }
 
+function calculateDistributionExperience(csv,metaSkill){
+	
+	var distribution = {
+		"No":0, "Less than 3":0, "Less than 5":0,"Less than 10":0,"More than 10":0 
+	};
+	
+	for (var i=0; i<csv.length; i++){
+		var experience = csv[i][metaSkill];
+		var type;
+		if      (experience >= 10){ type="More than 10"; }
+		else if (experience >= 5 ){ type="Less than 10"; }
+		else if (experience >= 3 ){ type="Less than 5"; }
+		else if (experience >= 1 ){ type="Less than 3"; }
+		else if (experience == 0 ){ type="No"; }
+
+		distribution[type]++;
+			
+	}
+
+	var keys = Object.keys(distribution);
+	var differentFormat = [];	
+	for (var i=0; i<keys.length; i++){
+		differentFormat.push({name:keys[i], value:distribution[keys[i]]});
+	}
+
+	return differentFormat;
+}
+
+
+
+
 function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 
 
@@ -126,7 +161,7 @@ function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 			.style("font-weight", "bold")	   
 	/* append the group element, so you can position the graph */
 	var group = canvas.svg.append("g")
-				.attr("transform", function(){return "translate(90," + (radius+yOffset) + ")";});
+				.attr("transform", function(){return "translate("+radius*1.5 +"," + (radius+yOffset) + ")";});
 	
 
 	

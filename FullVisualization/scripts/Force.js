@@ -53,7 +53,7 @@ function generateFrequencyDistribution(dataset, allSkills){
 function createForceVisualization(allSkills, data, metadata){
 
 	//ordered array, showing which distances are currently clicked
-	var selectedSkills = ["Algorithms","BackEnd","Bayesian","DistributedData","Business"/*,"ClassicalStats","DataWrangling","FrontEnd","GraphModels","MachineLearning","Math","Optimization",
+	var selectedSkills = ["Algorithms","BackEnd","Bayesian","DistrData","Business"/*,"ClassicalStats","DataWrangling","FrontEnd","GraphModels","MachineLearning","Math","Optimization",
 	"ProductDev","Science","Simulation","GIS","StructuredData","Marketing","SysAdmin","TimeSeries","UnstructuredData","Visualization"*/]; 
 
 	var activeList = [];

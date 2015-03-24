@@ -209,12 +209,12 @@ function filterFreqDistribution(elements,names){
 	var filtered = [];
 
 	for (var i=0; i<elements.length; i++){
-		//console.log(elements[i].name);
-		
-		if (names.indexOf(elements[i].name)>=0)
-			filtered.push(elements[i]);		
-	} 
 
+		var index = names.indexOf(elements[i].name);		
+		console.log(elements[i].name + " -> " +  index);		
+		if (index >=0)
+			filtered[index] = elements[i];		
+	} 
 	return filtered;
 }
 
