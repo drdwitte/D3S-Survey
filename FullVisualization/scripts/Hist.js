@@ -103,7 +103,9 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
 					filter[dataName]=i;
 
 
-					createPCVisualization();
+					//createPCVisualization();
+					
+					updatePieCharts("filtered")
 	
 					
 				})
@@ -211,7 +213,7 @@ function filterFreqDistribution(elements,names){
 	for (var i=0; i<elements.length; i++){
 
 		var index = names.indexOf(elements[i].name);		
-		console.log(elements[i].name + " -> " +  index);		
+		//console.log(elements[i].name + " -> " +  index);		
 		if (index >=0)
 			filtered[index] = elements[i];		
 	} 
