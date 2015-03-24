@@ -206,7 +206,8 @@ force.on('end', function() {
 						}
 
 						nodesClicked.text(activeList);
-							createHistogramMatrix(activeList,data, freqDistr, metadata);
+						createHistogramMatrix(activeList,data, freqDistr, metadata);
+						createBoxPlots(activeList, data);
 					})
 					;
 
