@@ -2,10 +2,90 @@
 
 <head>
 <meta charset="utf-8">
+<style>
 
+h1{
+ margin: 0px;
+}
+
+#FPContainer {
+width:  1800px;
+height: 600px;
+}
+
+#ForceVisualization {
+
+border: 1px solid black;
+width:  600px;
+height: 600px;
+float: left;
+}
+
+#ForceScatter
+{
+
+border: 1px solid black;
+width:  395px;
+height: 600px;
+float: left;
+}
+
+#PopulationVisualizationStatic 
+{
+
+border: 1px solid black;
+width:  345px;
+height: 600px;
+float: left;
+}
+
+#PopulationVisualization {
+
+border: 1px solid black;
+width:  345px;
+height: 600px;
+float: left;
+}
+
+#HistogramMatrixVisualization {
+
+/*border: 1px solid black;*/
+width:  1800px;
+height: 300px;
+}
+
+#PCVisualization {
+
+border: 1px solid black;
+width:  1800px;
+height: 1000px;
+}
+
+.separator {
+width:  1800px;
+height: 10px;
+}
+
+.node.inactive {
+    /*fill: #ccc;*/
+    stroke: #fff;
+    stroke-width: 2px;
+}
+
+.node.active {
+    /*fill: #ccc;*/
+    stroke: rgb(255,0,0);
+    stroke-width: 5px;
+}
+
+.link {
+    stroke: #777;
+    stroke-width: 2px;
+}
+
+</style>
 
 <!--d3 aankoppelen! -->
-<link rel="stylesheet" type="text/css" href="style.css" />
 <script type="text/javascript" src="d3/d3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script type="text/javascript" src="scripts/Force.js"></script>
@@ -52,8 +132,41 @@ function createVisualization(data){
 	var metadatasize = 5
 	var allSkills = allKeys.slice(metadatasize,allKeys.length);
 	var metadata =  allKeys.slice(0,metadatasize); //ID, Gender, ...
+
+	globalColorVector2_3 = generateColorVec(2);
+	globalColorVector3_3 = generateColorVec(3);
+	globalColorVector7_3 = generateColorVec(7);
+
 	createForceVisualization(allSkills, data, metadata);
 }
+
+function generateColorVec(colorsPerDim){
+
+	var vec = [];
+	var offset = 50;
+	var dist = (255-2*offset)/(colorsPerDim-1);
+
+	for (var i=0; i<colorsPerDim; i++){
+		for (var j=0; j<colorsPerDim; j++){
+			for (var k=0; k<colorsPerDim; k++){	
+				var rgbstring = "rgb("+(offset+i*dist)+","+(offset+j*dist)+","+(offset+k*dist)+")";
+				vec.push(rgbstring);
+				
+			}
+		}
+	}
+
+	shuffle(vec);
+	return vec;
+}
+
+
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/array/shuffle [v1.0]
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
 
 function stripPX(cssPX){
 
@@ -70,6 +183,12 @@ function randRGB(){
 	var rgbstring = "rgb("+randColor()+","+randColor()+","+randColor()+")";
 	return rgbstring;
 }
+
+var globalColorVector2_3
+var globalColorVector3_3
+var globalColorVector7_3
+
+
 
 </script>
 

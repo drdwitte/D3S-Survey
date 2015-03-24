@@ -1,30 +1,27 @@
 
+var color = d3.scale.category20b();
 
-function createPopulationVisualization(dataset){
-	//population Code
-	d3.select("#PopulationVisualization").selectAll("p").remove();
-	d3.select("#PopulationVisualization").append("p").text("Population Visualization");
-	
-}
+function createPopulationVisualization(convertedCSV, metadata){
 
-function createStaticPopulationVisualization(convertedCSV, metadata){
 	//population Code
-	var div = d3.select("#PopulationVisualizationStatic");
-	div.append("p").text("test");
+	var div = d3.select("#PopulationVisualization");
+	div.select("h1").remove();
+
+	var title = "PV";
+	div.append("h1").text("Filtered DS population")
+		.attr("id",title);
 	
-	console.log("this is the div");
-	console.log(div)
-	console.log("this is the stripfunction");
-	console.log(stripPX(div.style("width")));
+	var captionHeight = document.getElementById(title).offsetHeight;
+	console.log("cp "+captionHeight);
 	
 	/* create high scoped svgwidth and svgheight */
-	var svgwidth = stripPX(div.style("width"));
+
 
 	//create svg
 	div.selectAll("svg").remove();
 	var svg = div.append("svg")		
 			.attr("width",stripPX(div.style("width")))
-			.attr("height",stripPX(div.style("height")))
+			.attr("height",stripPX(div.style("height"))-captionHeight)
 			;
 	var canvas = {svg:svg, margin:{top:5,bottom:5,left:5,right:5}};	
 
@@ -36,12 +33,60 @@ function createStaticPopulationVisualization(convertedCSV, metadata){
 	var degreeDistr =  calculateDistribution(convertedCSV,"Degree");
 	//var experience =  calculateDistribution(convertedCSV,"Degree");
 	
-	console.log(genderDistr);
+	var distributions = [genderDistr, ageDistr, degreeDistr];
+	var names = ["Gender", "Age", "Highest degree"];
 
-	drawPieChart(genderDistr, canvas, svgwidth, 0);
-	drawPieChart(ageDistr, canvas, svgwidth, 90);
-	drawPieChart(degreeDistr, canvas, svgwidth, 180);
+	drawPieCharts(distributions, canvas, names);
 
+	
+}
+
+function createStaticPopulationVisualization(convertedCSV, metadata){
+
+	//population Code
+	var div = d3.select("#PopulationVisualizationStatic");
+	div.select("h1").remove();
+
+	var title = "PVStatic";
+	div.append("h1").text("Full Data Science Summit population")
+		.attr("id",title);
+	
+	var captionHeight = document.getElementById(title).offsetHeight;
+	console.log("cp "+captionHeight);
+	
+	/* create high scoped svgwidth and svgheight */
+
+
+	//create svg
+	div.selectAll("svg").remove();
+	var svg = div.append("svg")		
+			.attr("width",stripPX(div.style("width")))
+			.attr("height",stripPX(div.style("height"))-captionHeight)
+			;
+	var canvas = {svg:svg, margin:{top:5,bottom:5,left:5,right:5}};	
+
+
+	//columns of interest: ID, Age, Gender, Degree, Experience
+	
+	var genderDistr = calculateDistribution(convertedCSV,"Gender");
+	var ageDistr = calculateDistribution(convertedCSV,"Age");
+	var degreeDistr =  calculateDistribution(convertedCSV,"Degree");
+	//var experience =  calculateDistribution(convertedCSV,"Degree");
+	
+	var distributions = [genderDistr, ageDistr, degreeDistr];
+	var names = ["Gender", "Age", "Highest degree"];
+
+	drawPieCharts(distributions, canvas, names);
+
+
+
+}
+
+function drawPieCharts(distributions, canvas, names){
+	var boxHeight = canvas.svg.attr("height")/distributions.length;
+	for (var i=0; i<distributions.length; i++){
+		drawPieChart(distributions[i], canvas, i*boxHeight, boxHeight, names[i]);
+	}
 }
 
 function calculateDistribution(csv,metaSkill){
@@ -66,20 +111,27 @@ function calculateDistribution(csv,metaSkill){
 	return differentFormat;
 }
 
-function drawPieChart(distr, canvas, width, yOffset){
+function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 
-	var colors = d3.scale.ordinal()
-				   .range(["lightblue","pink"]);
-				   
+
+	var radius = boxHeight/2*0.75;
+	var textX = 3*radius;
+	var colors = d3.scale.category10();
+
+	canvas.svg.append("text")
+			.text(caption)
+			.attr("x", textX)
+			.attr("y", yOffset+radius - 25)
+			.style("font-size", 25)
+			.style("font-weight", "bold")	   
 	/* append the group element, so you can position the graph */
 	var group = canvas.svg.append("g")
-				.attr("transform", function(){return "translate(90," + (90 + yOffset) + ")";});
+				.attr("transform", function(){return "translate(90," + (radius+yOffset) + ")";});
 	
-	/* in the following line, radius is NaN, because width is undefined */
-	//var radius = canvas.svg.width/3;	
+
 	
 	/* we should pass a width */
-	var radius = width/8;
+
 	console.log("this is the radius");
 	console.log(radius);
 	//console.log("this is the width");
@@ -87,15 +139,16 @@ function drawPieChart(distr, canvas, width, yOffset){
 	
 	/* Het d objectje bij een arc is een object die beschrijft hoe het stukje pie eruit ziet. d in de functie
 		heeft een data attribuut. In dat data attribuut zit dan de eigenlijk data, in dit geval een json 
-		object. Vandaar: d.data.categorie; Bij dien tip is da ook zo
+		object. Vandaar: d.data.categorie; Bij die tip is dat ook zo
 	*/
-	var tip = d3.tip()
+	
+	/*var tip = d3.tip()
 		.attr('class', 'd3-tip')
-		.offset([-10, 0])
+		.offset([0, 0])
 		.html(function(d) {
-			return "<span style='color:red'>" + d.data.name + " : " + d.data.value + "</span>";
+			return "<span style='color:black'>" + d.data.name + " : " +  d.data.value + "</span>";
 	});	
-	canvas.svg.call(tip);	
+	canvas.svg.call(tip);*/	
 
 	var arc = d3.svg.arc()
 			.innerRadius(0)
@@ -114,11 +167,25 @@ function drawPieChart(distr, canvas, width, yOffset){
 					.data(pie(distr))
 					.enter()
 					.append("g");
+
+	
 					
 	arcs.append("path")
 		.attr("d", arc)
 		.attr("fill", function(d){return colors(d.data.value);})
 		.attr("class","classpath")
-		.on('mouseover', tip.show)
-		.on('mouseout', tip.hide);
+		.on('mouseover', function(d){
+					canvas.svg.append("text")
+							.attr("x",textX)
+							.attr("y",yOffset+radius)
+							.text(d.data.name+" : "+d.data.value)
+							.style("font-size", 15)
+							.attr("id","tooltip");					
+				})
+		.on('mouseout', function(d){
+					d3.select("#tooltip").remove();	
+
+
+				 
+				});
 }
