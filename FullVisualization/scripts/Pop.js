@@ -3,30 +3,20 @@ var color = d3.scale.category20b();
 
 function createPopulationVisualization(convertedCSV, metadata){
 
-
-	//
 	filteredCSV = convertedCSV.slice(0, 0 + 100);
 
-	//population Code
-	var div = d3.select("#PopulationVisualization");
-	div.select("h1").remove();
-
-	var title = "PV";
-	div.append("h1").text("Filtered DS population")
-		.attr("id",title);
+	var title = d3.select("#nonstaticpoptitle"); 
+	var div = d3.select("#nonstaticcontainer"); 
 	
-	var captionHeight = document.getElementById(title).offsetHeight;
-	console.log("cp "+captionHeight);
-	
-	/* create high scoped svgwidth and svgheight */
+	var titleHeight = title.style("height");	
 
-
-	//create svg
+	//create svg	
 	div.selectAll("svg").remove();
 	var svg = div.append("svg")		
 			.attr("width",stripPX(div.style("width")))
-			.attr("height",stripPX(div.style("height"))-captionHeight)
+			.attr("height",stripPX(div.style("height"))-stripPX(titleHeight))
 			;
+			
 	var canvas = {svg:svg, margin:{top:5,bottom:5,left:5,right:5}};	
 
 
@@ -39,34 +29,28 @@ function createPopulationVisualization(convertedCSV, metadata){
 	
 	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
 	var names = ["Gender", "Age", "Highest degree", "Experience"];
-
-	drawPieCharts(distributions, canvas, names);
-
 	
+	console.log(ageDistr);
+
+	drawPieCharts(distributions, canvas, names, "nonstatic");	
 }
 
 function createStaticPopulationVisualization(convertedCSV, metadata){
-
-	//population Code
-	var div = d3.select("#PopulationVisualizationStatic");
-	div.select("h1").remove();
-
-	var title = "PVStatic";
-	div.append("h1").text("Full Data Science Summit population")
-		.attr("id",title);
+	var title = d3.select("#staticpoptitle"); 
+	var div = d3.select("#staticcontainer"); 
 	
-	var captionHeight = document.getElementById(title).offsetHeight;
-	console.log("cp "+captionHeight);
-	
-	/* create high scoped svgwidth and svgheight */
-
+	var titleHeight = title.style("height");
+	console.log("titleHeight");
 
 	//create svg
 	div.selectAll("svg").remove();
 	var svg = div.append("svg")		
 			.attr("width",stripPX(div.style("width")))
-			.attr("height",stripPX(div.style("height"))-captionHeight)
+			.attr("height",stripPX(div.style("height"))-stripPX(titleHeight))
 			;
+			
+	console.log("this is the svg static");
+	console.log(svg);
 	var canvas = {svg:svg, margin:{top:5,bottom:5,left:5,right:5}};	
 
 
@@ -80,16 +64,19 @@ function createStaticPopulationVisualization(convertedCSV, metadata){
 	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
 	var names = ["Gender", "Age", "Highest degree", "Experience"];
 
-	drawPieCharts(distributions, canvas, names);
+	drawPieCharts(distributions, canvas, names, "static");
 
 
 
 }
 
-function drawPieCharts(distributions, canvas, names){
+function drawPieCharts(distributions, canvas, names, type){
 	var boxHeight = canvas.svg.attr("height")/distributions.length;
+	
+	console.log("boxheight non update " + canvas.svg.attr("height"));
+	
 	for (var i=0; i<distributions.length; i++){
-		drawPieChart(distributions[i], canvas, i*boxHeight, boxHeight, names[i]);
+		drawPieChart(distributions[i], canvas, i*boxHeight, boxHeight, names[i], type);
 	}
 }
 
@@ -146,8 +133,7 @@ function calculateDistributionExperience(csv,metaSkill){
 
 
 
-function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
-
+function drawPieChart(distr, canvas, yOffset, boxHeight, caption, type){
 
 	var radius = boxHeight/2*0.75;
 	var textX = 3*radius;
@@ -161,29 +147,13 @@ function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 			.style("font-weight", "bold")	   
 	/* append the group element, so you can position the graph */
 	var group = canvas.svg.append("g")
-				.attr("transform", function(){return "translate("+radius*1.5 +"," + (radius+yOffset) + ")";});
-	
-
-	
-	/* we should pass a width */
-
-	console.log("this is the radius");
-	console.log(radius);
-	//console.log("this is the width");
-	//console.log(canvas.svg.width);
+				.attr("transform", function(){return "translate("+radius*1.5 +"," + (radius+yOffset) + ")";})
+				.attr("id",caption + "-" +  type);
 	
 	/* Het d objectje bij een arc is een object die beschrijft hoe het stukje pie eruit ziet. d in de functie
 		heeft een data attribuut. In dat data attribuut zit dan de eigenlijk data, in dit geval een json 
 		object. Vandaar: d.data.categorie; Bij die tip is dat ook zo
 	*/
-	
-	/*var tip = d3.tip()
-		.attr('class', 'd3-tip')
-		.offset([0, 0])
-		.html(function(d) {
-			return "<span style='color:black'>" + d.data.name + " : " +  d.data.value + "</span>";
-	});	
-	canvas.svg.call(tip);*/	
 
 	var arc = d3.svg.arc()
 			.innerRadius(0)
@@ -191,7 +161,6 @@ function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 							
 	var pie = d3.layout.pie()
 				.value(function(d){
-					console.log(d.value);
 					return d.value;
 				})
 				.startAngle(0)
@@ -223,4 +192,49 @@ function drawPieChart(distr, canvas, yOffset, boxHeight, caption){
 
 				 
 				});
+}
+
+function updatePieCharts(convertedCSV){
+	var genderDistr = calculateDistribution(filteredCSV,"Gender");
+	var ageDistr = calculateDistribution(filteredCSV,"Age");
+	var degreeDistr =  calculateDistribution(filteredCSV,"Degree");
+	var experienceDistr =  calculateDistributionExperience(filteredCSV,"Experience");
+	
+	var distributions = [genderDistr, ageDistr, degreeDistr, experienceDistr];
+	var names = ["Gender-nonstatic", "Age-nonstatic", "Highest degree-nonstatic", "Experience-nonstatic"];
+	
+	var data = [
+					{"value":20},
+					{"value":2},
+					{"value":50},
+					{"value":20},
+					{"value":39}
+				];
+	
+	updatePieChart(data);
+}
+
+function updatePieChart(data){
+	// we have typed this already before
+	var div = d3.select(".container");
+	var height = div.selectAll("svg").attr("height");
+	
+	console.log("update height " + height);
+	
+	
+	var boxHeight = height/data.length;
+	
+	var radius = boxHeight/2*0.75;
+	
+	var arc = d3.svg.arc()
+			.innerRadius(0)
+			.outerRadius(radius);
+	
+	var pie = d3.layout.pie()
+					.value(function(d){ return d.value;});
+
+	d3.select("#Age-nonstatic").selectAll("path")			
+			.data(pie(data))
+			.transition().duration(2000)
+			.attr("d",arc);
 }
