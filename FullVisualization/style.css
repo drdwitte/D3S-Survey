@@ -2,6 +2,19 @@ h1 {
 margin: 0;
 }
 
+path.background {
+  fill: none;
+  stroke-width: 2;	
+  shape-rendering: crispEdges;
+  opacity: 0.2;
+}
+
+path.foreground {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke-width: 4;	
+}
+
 #FPContainer {
 width:  1800px;
 height: 600px;
@@ -10,8 +23,8 @@ height: 600px;
 #ForceVisualization {
 
 border: 1px solid black;
-width:  600px;
-height: 600px;
+width:  700px;
+height: 700px;
 float: left;
 }
 
@@ -19,8 +32,8 @@ float: left;
 {
 
 border: 1px solid black;
-width:  395px;
-height: 600px;
+width:  500px;
+height: 700px;
 float: left;
 }
 
@@ -28,16 +41,16 @@ float: left;
 {
 
 border: 1px solid black;
-width:  345px;
-height: 600px;
+width:  295px;
+height: 700px;
 float: left;
 }
 
 #PopulationVisualization {
 
 border: 1px solid black;
-width:  345px;
-height: 600px;
+width:  295px;
+height: 700px;
 float: left;
 }
 
@@ -59,18 +72,21 @@ float: left;
 /*border: 1px solid black;*/
 width:  1800px;
 height: 300px;
+float:left
 }
 
 #PCVisualization {
 
 border: 1px solid black;
 width:  1800px;
-height: 1000px;
+height: 700px;
+float:left
 }
 
 .separator {
 width:  1800px;
 height: 10px;
+float:left
 }
 
 .node.inactive {
