@@ -41,6 +41,19 @@ height: 600px;
 float: left;
 }
 
+.title{
+	width: 345px;
+	height: 30px;
+	font-size:1.2em;
+	text-align:center;
+	font-weight:bold;
+	margin-bottom:10px;
+}
+.container{
+	width: 345px;
+	height:560px;
+}
+
 #HistogramMatrixVisualization {
 
 /*border: 1px solid black;*/

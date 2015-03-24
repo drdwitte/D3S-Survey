@@ -122,13 +122,13 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
 				;
 
 	
-	generateAxes(xScale,yScale,canvas,xLeft,dataName);
+	generateAxesHist(xScale,yScale,canvas,xLeft,dataName);
 
 
 		
 }
 
-function generateAxes(xScale,yScale,canvas,xLeft,caption){
+function generateAxesHist(xScale,yScale,canvas,xLeft,caption){
 
 	//drawing the X and Y-axis + add a caption
 	var xAxis = d3.svg.axis()
