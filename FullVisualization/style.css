@@ -1,3 +1,102 @@
+#FPContainer {
+width:  1800px;
+height: 600px;
+}
+
+#ForceVisualization {
+
+border: 1px solid black;
+width:  600px;
+height: 600px;
+float: left;
+}
+
+#ForceScatter
+{
+
+border: 1px solid black;
+width:  395px;
+height: 600px;
+float: left;
+}
+
+#PopulationVisualizationStatic 
+{
+
+border: 1px solid black;
+width:  345px;
+height: 600px;
+float: left;
+}
+
+#PopulationVisualization {
+
+border: 1px solid black;
+width:  345px;
+height: 600px;
+float: left;
+}
+
+#HistogramMatrixVisualization {
+
+/*border: 1px solid black;*/
+width:  1800px;
+height: 300px;
+}
+
+#PCVisualization {
+
+border: 1px solid black;
+width:  1800px;
+height: 1000px;
+}
+
+.separator {
+width:  1800px;
+height: 10px;
+}
+
+.node.inactive {
+    stroke: #fff;
+    stroke-width: 2px;
+	fill-opacity:0.4;
+}
+
+.node.active {
+    stroke: rgb(255,0,0);
+    stroke-width: 5px;
+	fill-opacity: 1;
+}
+.link {
+    stroke: #777;
+    stroke-width: 1px;
+}
 .classpath:hover{
 	fill:yellow;
 }
+.label{
+	font-size:10px;
+	font-weight:bold;
+	-webkit-transition: font 1s; /* Safari */
+    transition: font 1s;
+}
+.label:hover{
+	font-size:16px;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+#HistogramMatrixVisualization text{
+	font-size:14px;
+}
+#HistogramMatrixVisualization svg rect{
+	stroke: #003300;
+	stroke-width:2px;
+	fill:#003300;
+	fill-opacity:0.7;
+}
+
