@@ -22,6 +22,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 
 	//convert the input dataset to a format where the keys are explicitely in the value of the fields
 	var convertedCSV = convertCSV(dataset,activeSkills, metadata);
+	filterCompetence(convertedCSV, filterDictionary)
 
 	drawHistogramMatrix(filteredDistr, canvas, filterDictionary);
 
@@ -31,7 +32,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 	createPopulationVisualization(convertedCSV);
 	createStaticPopulationVisualization(convertedCSV);	
 	//bind parallel coordinates
-	createPCVisualization();
+	createPCVisualization(activeSkills, convertedCSV);
 }
 
 function initializeFilterDictionary(activeSkills){
@@ -103,7 +104,7 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
 					filter[dataName]=i;
 
 
-					createPCVisualization();
+					createPCVisualization(activeSkills, filterDictionary);
 	
 					
 				})
@@ -200,6 +201,25 @@ function convertSingleRec(record, active, metadata){
 	}
 	return converted;
 	
+}
+
+function filterCompetence(records, filterM){
+
+	var skills = Object.keys(filterM);
+
+	var filtered = [];	
+	for (var i=0; i<records.length; i++){
+		var ok = true;
+		for (var j=0; j<skills.length; j++) {
+			if (records[i].skills[j].score <= filterM[skills[j]]+0.1){
+				ok =false;
+				//console.log(records[i].skills[j].type+"_"+skills[j]);
+				break;
+				
+			}
+  		}
+		records[i].visible=ok;
+	}
 }
 
 
