@@ -11,6 +11,14 @@ function createStaticPopulationVisualization(convertedCSV, metadata){
 	//population Code
 	var div = d3.select("#PopulationVisualizationStatic");
 	div.append("p").text("test");
+	
+	console.log("this is the div");
+	console.log(div)
+	console.log("this is the stripfunction");
+	console.log(stripPX(div.style("width")));
+	
+	/* create high scoped svgwidth and svgheight */
+	var svgwidth = stripPX(div.style("width"));
 
 	//create svg
 	div.selectAll("svg").remove();
@@ -30,9 +38,9 @@ function createStaticPopulationVisualization(convertedCSV, metadata){
 	
 	console.log(genderDistr);
 
-	drawPieChart(genderDistr, canvas);
-	//drawPieChart(ageDistr);
-	//drawPieChart(degreeDistr);
+	drawPieChart(genderDistr, canvas, svgwidth, 0);
+	drawPieChart(ageDistr, canvas, svgwidth, 90);
+	drawPieChart(degreeDistr, canvas, svgwidth, 180);
 
 }
 
@@ -58,16 +66,24 @@ function calculateDistribution(csv,metaSkill){
 	return differentFormat;
 }
 
-function drawPieChart(distr, canvas){
-
+function drawPieChart(distr, canvas, width, yOffset){
 
 	var colors = d3.scale.ordinal()
-				   .range(["lightblue","pink"]);	
+				   .range(["lightblue","pink"]);
+				   
 	/* append the group element, so you can position the graph */
 	var group = canvas.svg.append("g")
-				.attr("transform", "translate(90,90)");
-			
-	var radius = canvas.svg.width/3;
+				.attr("transform", function(){return "translate(90," + (90 + yOffset) + ")";});
+	
+	/* in the following line, radius is NaN, because width is undefined */
+	//var radius = canvas.svg.width/3;	
+	
+	/* we should pass a width */
+	var radius = width/8;
+	console.log("this is the radius");
+	console.log(radius);
+	//console.log("this is the width");
+	//console.log(canvas.svg.width);
 	
 	/* Het d objectje bij een arc is een object die beschrijft hoe het stukje pie eruit ziet. d in de functie
 		heeft een data attribuut. In dat data attribuut zit dan de eigenlijk data, in dit geval een json 
@@ -87,6 +103,7 @@ function drawPieChart(distr, canvas){
 							
 	var pie = d3.layout.pie()
 				.value(function(d){
+					console.log(d.value);
 					return d.value;
 				})
 				.startAngle(0)
