@@ -24,7 +24,7 @@ height: 600px;
 
 #ForceVisualization {
 
-border: 1px solid black;
+border: none;
 width:  700px;
 height: 700px;
 float: left;
@@ -33,8 +33,8 @@ float: left;
 #ForceScatter
 {
 
-border: 1px solid black;
-width:  500px;
+border: none;
+width:  600px;
 height: 700px;
 float: left;
 }
@@ -42,15 +42,15 @@ float: left;
 #PopulationVisualizationStatic 
 {
 
-border: 1px solid black;
-width:  295px;
+border: none;
+width:  195px;
 height: 700px;
 float: left;
 }
 
 #PopulationVisualization {
 
-border: 1px solid black;
+border: none;
 width:  295px;
 height: 700px;
 float: left;
@@ -59,8 +59,8 @@ float: left;
 .title{
 	width: 345px;
 	height: 30px;
-	font-size:1.2em;
-	text-align:center;
+	font-size:1em;
+	text-align:lwdr;
 	font-weight:bold;
 	margin-bottom:10px;
 }
@@ -79,7 +79,7 @@ float:left
 
 #PCVisualization {
 
-border: 1px solid black;
+border: none;
 width:  1800px;
 height: 700px;
 float:left
@@ -110,7 +110,7 @@ float:left
 	fill:yellow;
 }
 .label{
-	font-size:10px;
+	font-size:14px;
 	font-weight:bold;
 	-webkit-transition: font 1s; /* Safari */
     transition: font 1s;
