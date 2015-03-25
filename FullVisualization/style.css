@@ -5,15 +5,17 @@ margin: 0;
 path.background {
   fill: none;
   stroke-width: 2;	
-  shape-rendering: crispEdges;
+  /*shape-rendering: crispEdges;*/
   opacity: 0.2;
 }
 
 path.foreground {
   fill: none;
-  shape-rendering: crispEdges;
+  /*shape-rendering: crispEdges;*/
   stroke-width: 4;	
 }
+
+
 
 #FPContainer {
 width:  1800px;

@@ -50,6 +50,10 @@ function generateFrequencyDistribution(dataset, allSkills){
 	return freqDistr;
 }
 
+function calcRadius(d,i, linksPerNode, avgRadius){
+ return -4*linksPerNode[i]+avgRadius+15;
+}
+
 function createForceVisualization(allSkills, data, metadata){
 
 	//ordered array, showing which distances are currently clicked
@@ -70,7 +74,7 @@ function createForceVisualization(allSkills, data, metadata){
 
 	var width = svg.attr("width");
 	var height = svg.attr("height");
-	var radius = 20;
+	var avgRadius = 20;
 
 	//generate skill distances;
 	//double map [skill1][skill2] -> euclidean distance * factor to map between 0 en 1 = 5*numPeople; 
@@ -105,7 +109,7 @@ function createForceVisualization(allSkills, data, metadata){
 	force.linkDistance(function(links){ return links.dist; });
 	force.linkStrength(function(link) { return 0.99; });
 	force.charge(function(d){return -1000;})
-	force.gravity(0.33);
+	force.gravity(0.2);
 
 	var link = svg.selectAll('.link')
 	    .data(links)
@@ -119,7 +123,7 @@ function createForceVisualization(allSkills, data, metadata){
 	    .enter().append('circle')
 	    .attr('class', 'node')
 	    .style('fill', randRGB)
-	    .attr('r', function(d,i){ return 4*linksPerNode[i]+radius-10;})	
+	    .attr('r', function(d,i){ return calcRadius(d,i,linksPerNode, avgRadius);})	
 		;
 	    
             
@@ -159,8 +163,8 @@ force.on('end', function() {
         .attr('y2', function(d) { return d.target.y; });
 
 
-    labels.attr('x',function(d) { return d.x+radius-1; });
-    labels.attr('y',function(d) { return d.y-radius+1; });
+    labels.attr('x',function(d) { return d.x+avgRadius-1; });
+    labels.attr('y',function(d) { return d.y-avgRadius+1; });
     labels.text(function(d){ return d.name; })
 
 	});
@@ -240,8 +244,8 @@ force.on('end', function() {
 	  node.attr("cx", function(d) { return d.x; })
 	      .attr("cy", function(d) { return d.y; });
 
-	 labels.attr('x',function(d) { return d.x+radius-1; });
-	    labels.attr('y',function(d) { return d.y-radius+1; });
+	 labels.attr('x',function(d) { return d.x+avgRadius-1; });
+	    labels.attr('y',function(d) { return d.y-avgRadius+1; });
 	}
 
 	//***

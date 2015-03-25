@@ -49,7 +49,7 @@ function createPCVisualization(activeSkills, filteredCSV){
 			.attr("width",stripPX(div.style("width")))
 			.attr("height",stripPX(div.style("height")))
 			;
-	var canvas = {svg:svg, margin:{top:20,bottom:5,left:30,right:30}};
+	var canvas = {svg:svg, margin:{top:20,bottom:5,left:30,right:5}};
 
 	var xScale = d3.scale.ordinal()
 	    		.domain(activeSkills)

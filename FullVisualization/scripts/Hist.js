@@ -12,7 +12,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 			.attr("width",stripPX(div.style("width")))
 			.attr("height",stripPX(div.style("height")))
 			;
-	var canvas = {svg:svg, margin:{top:20,bottom:5,left:60,right:60}};
+	var canvas = {svg:svg, margin:{top:20,bottom:5,left:120,right:120}};
 
 	//filter the frequency distribution for the active skills
 	var filteredDistr = filterFreqDistribution(freqDistrSkills,activeSkills);
@@ -24,7 +24,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 	var convertedCSV = convertCSV(dataset,activeSkills, metadata);
 	filterCompetence(convertedCSV, filterDictionary)
 
-	drawHistogramMatrix(filteredDistr, canvas, filterDictionary);
+	drawHistogramMatrix(filteredDistr, canvas, filterDictionary, activeSkills, convertedCSV);
 
 	
 	
@@ -45,7 +45,7 @@ function initializeFilterDictionary(activeSkills){
 
 }
 
-function drawHistogramMatrix(data, canvas, filter){
+function drawHistogramMatrix(data, canvas, filter, activeSkills, convertedCSV){
 
 	var numBoxes = data.length;
 	var totalBoxWidth = canvas.svg.attr("width") - canvas.margin.left - canvas.margin.right;
@@ -56,13 +56,13 @@ function drawHistogramMatrix(data, canvas, filter){
 
 	for (var i=0; i<numBoxes; i++)
 	{	
-		drawOneHistogram(data[i]["freqs"], data[i].name,left+i*singleBoxRange,left+i*singleBoxRange+singleBoxWidth, canvas, filter);
+		drawOneHistogram(data[i]["freqs"], data[i].name,left+i*singleBoxRange,left+i*singleBoxRange+singleBoxWidth, canvas, filter, activeSkills, convertedCSV);
 	}
 
 	
 }
 
-function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
+function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter, activeSkills, convertedCSV){
 
 	var xScale = d3.scale.linear()
 	    		.domain([0, d3.max(data)])
@@ -103,10 +103,11 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter){
 					}
 					filter[dataName]=i;
 					
-					//createPCVisualization();
-					
+				
 					updatePieCharts("filtered")
-					createPCVisualization(activeSkills, filterDictionary);
+
+					filterCompetence(convertedCSV, filter)
+					createPCVisualization(activeSkills, convertedCSV);
 	
 					
 				})
