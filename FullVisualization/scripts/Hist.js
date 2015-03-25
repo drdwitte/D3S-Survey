@@ -12,7 +12,7 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 			.attr("width",stripPX(div.style("width")))
 			.attr("height",stripPX(div.style("height")))
 			;
-	var canvas = {svg:svg, margin:{top:20,bottom:5,left:120,right:120}};
+	var canvas = {svg:svg, margin:{top:20,bottom:60,left:120,right:120}};
 
 	//filter the frequency distribution for the active skills
 	var filteredDistr = filterFreqDistribution(freqDistrSkills,activeSkills);
@@ -29,8 +29,8 @@ function createHistogramMatrix(activeSkills, dataset, freqDistrSkills, metadata)
 	
 	
 	//bind population
-	createPopulationVisualization(convertedCSV);
 	createStaticPopulationVisualization(convertedCSV);	
+	createPopulationVisualization(convertedCSV);
 	//bind parallel coordinates
 	createPCVisualization(activeSkills, convertedCSV);
 }
@@ -104,9 +104,10 @@ function drawOneHistogram(data, dataName, xLeft, xRight, canvas, filter, activeS
 					filter[dataName]=i;
 					
 				
-					updatePieCharts("filtered")
+					
 
 					filterCompetence(convertedCSV, filter)
+					createPopulationVisualization(convertedCSV)
 					createPCVisualization(activeSkills, convertedCSV);
 	
 					

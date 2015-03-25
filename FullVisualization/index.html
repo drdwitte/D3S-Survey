@@ -18,25 +18,31 @@
 
 <body>
 <div id="FPContainer">
-	<div id="ForceVisualization">
-	</div>
-	<div id="ForceScatter">
-	</div>
+	
 	<div id="PopulationVisualizationStatic">
-		<div id="staticpoptitle" class="title">Full Data Science Summit population</div>
+		<div id="staticpoptitle" class="title">Full Population</div>
 		<div id="staticcontainer" class="container"></div>
 	</div>	
+	
 	<div id="PopulationVisualization">
-		<div id="nonstaticpoptitle" class="title">Filtered DS population</div>
+		<div id="nonstaticpoptitle" class="title">Filtered Population</div>
 		<div id="nonstaticcontainer" class="container"></div>
 	</div>
+	<div id="ForceVisualization">
+		<div  class="title" style="width:1000px">Competence clustering (clicking on a node will show its score distribution) </div>	
+	</div>	
 	
+	<div id="ForceScatter">
+		<div  class="title" style="width:1000px">Comparing Score Pairs (first 2 nodes clicked in clustering on the left) </div>	
+	</div>
 </div>
 <div class="separator"></div>
 <div id="HistogramMatrixVisualization">
+<div id="HistogramCaption" class="title" style="width:1800px;">Score distribution per skill (bars are clickable filter functions for the filtered population chart (top) and the slope chart below!) </div>
 </div>
 <div class="separator"></div>
 <div id="PCVisualization">
+<div id="SlopeCaption" class="title" style="width:1800px;"> Slopechart of selected skills: One curve per user! (filter with histograms above)
 </div>
 
 <script>
@@ -74,7 +80,7 @@ function generateColorVec(colorsPerDim){
 	for (var i=0; i<colorsPerDim; i++){
 		for (var j=0; j<colorsPerDim; j++){
 			for (var k=0; k<colorsPerDim; k++){	
-				var rgbstring = "rgb("+(offset+i*dist)+","+(offset+j*dist)+","+(offset+k*dist)+")";
+				var rgbstring = "rgb("+(parseInt(offset+i*dist))+","+(parseInt(offset+j*dist))+","+(parseInt(offset+k*dist))+")";
 				vec.push(rgbstring);
 				
 			}
@@ -116,17 +122,6 @@ var globalColorVector7_3;
 
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
 
 </body>
 </html>

@@ -11,7 +11,6 @@ function calculateAllDistances(skillset,dataset){
 		var si=skillset[i];
 		for (var j=0; j<i; j++){
 			var sj=skillset[j];
-			//console.log(si+" "+sj);
 			var dij = calculateSkillDistance(dataset,skillset[i],skillset[j]);
 			distanceMatrix[si][sj] = dij;
 			distanceMatrix[sj][si] = dij;
@@ -53,6 +52,11 @@ function generateFrequencyDistribution(dataset, allSkills){
 function calcRadius(d,i, linksPerNode, avgRadius){
  return -4*linksPerNode[i]+avgRadius+15;
 }
+
+function calcCharge(d,i, linksPerNode){
+ return -1200+100*linksPerNode[i]; //alternative: return -1000 for everything
+}
+
 
 function createForceVisualization(allSkills, data, metadata){
 
@@ -108,7 +112,7 @@ function createForceVisualization(allSkills, data, metadata){
 
 	force.linkDistance(function(links){ return links.dist; });
 	force.linkStrength(function(link) { return 0.99; });
-	force.charge(function(d){return -1000;})
+	force.charge(function(d,i){return calcCharge(d,i, linksPerNode);})
 	force.gravity(0.2);
 
 	var link = svg.selectAll('.link')
@@ -137,7 +141,7 @@ function createForceVisualization(allSkills, data, metadata){
 	var nodesClicked = svg.append("text");
 		nodesClicked.attr("x",width/5);
 		nodesClicked.attr("y",height-10);
-		nodesClicked.text("Nothing Clicked");
+		//nodesClicked.text("Nothing Clicked");
 		
 
 	var drag = force.drag()
@@ -209,7 +213,7 @@ force.on('end', function() {
 							removeFromActiveList(d.name);					
 						}
 
-						nodesClicked.text(activeList);
+						//nodesClicked.text(activeList);
 						createHistogramMatrix(activeList,data, freqDistr, metadata);
 						createBoxPlots(activeList, data);
 					})

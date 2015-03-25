@@ -1,4 +1,65 @@
 
+function createTransitionView(data, skilli, skillj){
+
+	var aggregates = [];
+	var transitions = {};
+	var globalTransitions = {};	
+	var totalParticipants = data.length;
+
+	for (var i=1; i<=5; i++){
+		globalTransitions[i+"->*"] = 0;
+		for (var j=1; j<=5; j++){
+			transitions[i+"->"+j] = 0;		
+		}	
+	}
+
+	for (var i=0; i<data.length; i++){
+		var scorei= data[i][skilli];
+		var scorej= data[i][skillj];	
+		transitions[scorei+"->"+scorej]++;
+		globalTransitions[scorei+"->*"]++;
+	}
+	
+
+	var curX=0.0;
+
+	for (var i=1; i<=5; i++){
+
+		var curY=0.0;
+		var inBar = globalTransitions[i+"->*"];
+		var xWidth = 100*inBar/totalParticipants
+		
+		for (var j=1; j<=5; j++){
+
+			var t = i+"->"+j
+			var inSquare = transitions[t];
+				
+			var agg = {};
+			agg["transition"]=t;
+			agg["diff"]=Math.abs(i-j);
+				
+			newY=curY + 100*inSquare/inBar;
+			agg["x"]=curX;
+			agg["y"]=newY;			
+			agg["w"]=Math.max(xWidth-1,0);			
+			agg["h"]=Math.max(newY-curY -1,0);
+		
+			//console.log(inSquare+" / "+inBar+" ("+curX+" , "+newY+")");
+			//console.log(agg);
+
+			aggregates.push(agg);
+			curY=newY;
+
+			
+		}
+		curX+=xWidth;
+	}
+	//console.log(transitions);
+	//console.log(globalTransitions);
+	//console.log(aggregates);
+	return aggregates;
+}
+
 function createBoxPlots(activeSkills, dataset){
 
 	//boxplot Code
@@ -19,7 +80,7 @@ function createBoxPlots(activeSkills, dataset){
 			.attr("width",stripPX(div.style("width")))
 			.attr("height",stripPX(div.style("height")))
 			;
-	var canvas = {svg:svg, margin:{top:140,bottom:140,left:60,right:30}};
+	var canvas = {svg:svg, margin:{top:60,bottom:120,left:50,right:30}};
 
 	
 	var xScale = d3.scale.linear()
@@ -37,7 +98,9 @@ function createBoxPlots(activeSkills, dataset){
 		{"from":1, "to:{} 		
 	]*/
 
-	var aggregatedData = [
+	var aggregatedData = createTransitionView(dataset, skillX, skillY);
+
+			/*[
 				{x:0  , y:20  , w:30-1 , h:20-1,  diff:0, transition:"1->1"},
 				{x:0  , y:70 ,  w:30-1 , h:50-1,  diff:1, transition:"1->2"},
 				{x:0  , y:100 , w:30-1 , h:30-1,  diff:2, transition:"1->3"}, 
@@ -51,7 +114,7 @@ function createBoxPlots(activeSkills, dataset){
 				{x:50 , y:100 , w:50-1 , h:10-1,  diff:0, transition:"3->3"}
 				
 			
-				];
+				];*/
 	//var colors = d3.scale.category10();
 	var colors = [ "#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]
 
@@ -66,15 +129,17 @@ function createBoxPlots(activeSkills, dataset){
 		.attr("y", function(d)     { return yScale(d.y)  })				      				
 		.attr("width", function(d) { return xScale(d.w)-xScale(0)  })								
 		.attr("height", function(d){ return yScale(0)-yScale(d.h)  })
-		.style("fill", function(d) { return colors[9-d.diff];})				
-		
+		.style("fill", function(d) { return colors[9-d.diff];})	
+		.style("fill-opacity",0.8)			
+		.style("font-weight","bold")
 		.on("mouseover", function(d){
 			square = d3.select(this);
 			svg.append("text")
 				.attr("id","tooltipsquare")
 				.text(d.transition)
 				.attr("x",parseInt(square.attr("x")) +1 )
-				.attr("y",parseInt(square.attr("y")) +20 )	
+				.attr("y",parseInt(square.attr("y")) +20 )
+				.attr("fill","white");	
 		})
 		
 		.on("mouseout", function(d){
@@ -138,7 +203,7 @@ function generateAxes(xScale,yScale,canvas, labelX, labelY){
 	gY.call(yAxis);
 
 	canvas.svg.append("text")
-		.text(labelX)
+		.text(labelX+ " (%)")
 		.attr("transform","translate("
 					+(canvas.svg.attr("width")-5*canvas.margin.right)
 					+","
@@ -147,7 +212,7 @@ function generateAxes(xScale,yScale,canvas, labelX, labelY){
 		);
 
 	canvas.svg.append("text")
-		.text(labelY)
+		.text(labelY+ " (%)")
 		.attr("transform","translate("
 					+(canvas.margin.left+10)
 					+","
